@@ -1,0 +1,8 @@
+html, body{
+    background: #eee;
+}
+
+#screen{
+    display: block;
+    margin: 0 auto;
+}
