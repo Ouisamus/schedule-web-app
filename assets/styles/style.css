@@ -1,8 +1,9 @@
 html, body{
     background: #eee;
+    /* margin: 0 10%; */
 }
 
-#screen{
+#schedule{
     display: block;
-    margin: 0 auto;
+    /* margin: 0 auto; */
 }
