@@ -25,7 +25,7 @@ class Person {
 // Draw header
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const header = document.querySelector('#header');
-let weekday = 0;
+let weekday = (new Date(Date.now())).getDay()-1;
 
 if (header) {
     let weekdayLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -104,7 +104,7 @@ if (schedule) {
 
 function updateCurrentTime(line) {
     let currentTime = new Date(Date.now());
-    let opacity = currentTime.getDay() - 1 == weekday ? 1 : 0.3;
+    let opacity = currentTime.getDay() - 1 == weekday ? 1 : 0.3; // less opacity when it's not today"
     currentTime = currentTime.getHours() * 60 + currentTime.getMinutes();
     if (currentTime >= 480 && currentTime <= 1200) { // between 8am and 8pm?
         drawHorizLine(line, (100 / 720) * (currentTime - 480), '#f00', '0.5', opacity);
