@@ -21,16 +21,27 @@ class Person {
     }
 }
 
+
+// Draw header
+const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const header = document.querySelector('#header');
+let weekday = 0;
+
+if (header) {
+    let weekdayLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    drawWeekdayLabel(weekdayLabel, daysOfWeek[weekday], 10, '#000');
+    header.appendChild(weekdayLabel);
+}
+
+// Draw schedule
 const period = 12;
-const schedule = document.querySelector("#schedule");
-const weekday = 0;
+const schedule = document.querySelector('#schedule');
 
 if (schedule) {
-    console.log(schedule.height);
     // Draw hour lines
     for (let i = 1; i < period; i++) {
         let hourLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        drawHorizLine(hourLine, 100 / period * i, '#bbb', '0.5'); // change function to do Y math in percentages
+        drawHorizLine(hourLine, 100 / period * i, '#bbb', '0.5');
         schedule.appendChild(hourLine);
     }
 
@@ -51,6 +62,8 @@ if (schedule) {
     let verticalLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     drawVertLine(verticalLine, 10, '#bbb', '0.5');
     schedule.appendChild(verticalLine);
+
+    // Draw weekday label
 
     // Establishing people and classes
     let people = new Array();
@@ -85,38 +98,29 @@ if (schedule) {
 
     // Draw courses
     const courses = document.querySelector("#courses");
-    const cols = people.length;
-    if (courses && cols > 0) {
-        people.forEach((person, i) => {
-            person.courses.forEach((course) => {
-                course.meetings.forEach((meeting) => {
-                    if (weekday == meeting.weekday){
-                        let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                        drawMeeting(rect, i, cols, meeting.start, meeting.end, person.color);
-                        courses.appendChild(rect);
-                    }
-                });
-            });
-        });
-    }
+    drawCourses(people, people.length);
 
 }
 
 function updateCurrentTime(line) {
     let currentTime = new Date(Date.now());
+    let opacity = currentTime.getDay() - 1 == weekday ? 1 : 0.3;
     currentTime = currentTime.getHours() * 60 + currentTime.getMinutes();
     if (currentTime >= 480 && currentTime <= 1200) { // between 8am and 8pm?
-        drawHorizLine(line, (100 / 720) * (currentTime - 480), '#f00', '0.5');
+        drawHorizLine(line, (100 / 720) * (currentTime - 480), '#f00', '0.5', opacity);
     }
 }
 
-function drawHorizLine(line, y, color, size) {
+function drawHorizLine(line, y, color, size, opacity) {
     line.setAttribute('x1', '0');
     line.setAttribute('x2', '100%');
     line.setAttribute('y1', `${y}%`);
     line.setAttribute('y2', `${y}%`);
     line.setAttribute('stroke', color);
     line.setAttribute('stroke-width', size);
+    if (opacity) {
+        line.setAttribute('stroke-opacity', opacity);
+    }
 }
 
 function drawVertLine(line, x, color, size) {
@@ -143,6 +147,18 @@ function drawHourLabel(label, hour, size, y, color) {
     label.setAttribute('fill', color);
 }
 
+function drawWeekdayLabel(label, weekday, size, color) {
+    textNode = document.createTextNode(weekday);
+    label.appendChild(textNode);
+    label.setAttribute('font-size', size);
+    label.setAttribute('font-family', 'helvetica');
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('dominant-baseline', 'central');
+    label.setAttribute('x', '50%');
+    label.setAttribute('y', '50%');
+    label.setAttribute('fill', color);
+}
+
 function drawMeeting(rect, col, totalCols, start, end, color) {
     rect.setAttribute('x', `${100 / totalCols * col}%`);
     rect.setAttribute('y', `${(100 / 720) * (start - 480)}%`);
@@ -150,4 +166,20 @@ function drawMeeting(rect, col, totalCols, start, end, color) {
     rect.setAttribute('height', `${(100 / 720) * (end - start)}%`);
     rect.setAttribute('fill', color);
     rect.setAttribute('rx', 2); // rounded corners
+}
+
+function drawCourses(people, cols){
+    if (courses && cols > 0) {
+        people.forEach((person, i) => {
+            person.courses.forEach((course) => {
+                course.meetings.forEach((meeting) => {
+                    if (weekday == meeting.weekday){
+                        let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                        drawMeeting(rect, i, cols, meeting.start, meeting.end, person.color);
+                        courses.appendChild(rect);
+                    }
+                });
+            });
+        });
+    }
 }
