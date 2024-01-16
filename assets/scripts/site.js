@@ -47,11 +47,12 @@ if (schedule) {
 
     // Create current time line
     const nowLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    updateCurrentTime(nowLine);
+    nowLine.setAttribute('id', 'nowLine')
     schedule.appendChild(nowLine);
+    updateCurrentTime();
 
     // Update time line
-    const intervalID = setInterval(updateCurrentTime, 2000, nowLine);
+    const intervalID = setInterval(updateCurrentTime, 2000);
 
     // Draw hour labels
     for (let i = 1; i <= period; i++) {
@@ -106,9 +107,10 @@ if (schedule) {
 
 }
 
-function updateCurrentTime(line) {
+function updateCurrentTime() {
+    const line = document.getElementById('nowLine')
     let currentTime = new Date(Date.now());
-    let opacity = currentTime.getDay() - 1 == weekday ? 1 : 0.3; // less opacity when it's not today"
+    let opacity = currentTime.getDay() - 1 == weekday ? 1 : 0.3; // less opacity when it's not today
     currentTime = currentTime.getHours() * 60 + currentTime.getMinutes();
     if (currentTime >= 480 && currentTime <= 1200) { // between 8am and 8pm?
         drawHorizLine(line, (100 / 720) * (currentTime - 480), '#f00', '0.5', opacity);
@@ -193,14 +195,12 @@ function drawCourses(courses, people, cols) {;
     }
 }
 
-function clearCourses(){
-
-}
-
 function previousDay(courses, people) {
     if (weekday > 0) {
         weekday--;
         drawCourses(courses, people, people.length);
+        document.getElementById('weekdayLabel').firstChild.nodeValue = daysOfWeek[weekday];
+        updateCurrentTime();
     }
 }
 
@@ -208,5 +208,7 @@ function nextDay(courses, people) {
     if (weekday < 4) {
         weekday++;
         drawCourses(courses, people, people.length);
+        document.getElementById('weekdayLabel').firstChild.nodeValue = daysOfWeek[weekday];
+        updateCurrentTime();
     }
 }
