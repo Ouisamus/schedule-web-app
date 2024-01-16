@@ -1,6 +1,7 @@
 // Draw header
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const header = document.querySelector('#header');
+const SEMESTER = '202401';
 let weekday = (new Date(Date.now())).getDay() - 1;
 
 if (header) {
@@ -46,37 +47,30 @@ if (schedule) {
     // Establishing people and classes
     let people = new Array();
 
+    // Loading & drawing courses
+    const courses = document.querySelector("#courses");
+
     // Ryan
     let ryan = new Person('Ryan', '#9b59b6');
-    let course1 = new Course('ENGL101-1002');
-    course1.meetings.push(new Meeting(480, 555, 1), new Meeting(480, 555, 3));
-    let course2 = new Course('THET285-0102');
-    course2.meetings.push(new Meeting(720, 830, 0), new Meeting(720, 830, 2));
-    let course3 = new Course('ECON230-0101');
-    course3.meetings.push(new Meeting(840, 915, 0), new Meeting(840, 915, 2));
-    let course4 = new Course('ECON306-0202');
-    course4.meetings.push(new Meeting(930, 1005, 0), new Meeting(930, 1005, 2), new Meeting(720, 770, 4));
-    let course5 = new Course('PLCY213-0201');
-    course5.meetings.push(new Meeting(930, 1005, 1), new Meeting(900, 1005, 3))
-    ryan.courses.push(course1, course2, course3, course4, course5);
+    const ryanArr = [['ENGL101', '1002'], ['THET285', '0102'], ['ECON230', '0101'], ['ECON306', '0202'], ['PLCY213', '0201']];
+    for (const entry of ryanArr){
+        const c = getCourseObj(entry[0], entry[1], SEMESTER).then((c) => {
+            ryan.courses.push(c);
+            drawOneCourse(courses, c, 0, 2, ryan.color);
+        });
+    }
     people.push(ryan);
 
-    // Keys
+    // // Keys
     let keys = new Person('Keys', '#388fc7');
-    course1 = new Course('CMSC132-0202');
-    course1.meetings.push(new Meeting(540, 590, 0), new Meeting(540, 590, 2), new Meeting(780, 830, 0), new Meeting(780, 830, 2), new Meeting(780, 830, 4));
-    course2 = new Course('BSCI103-1107');
-    course2.meetings.push(new Meeting(480, 650, 1), new Meeting(750, 825, 1), new Meeting(750, 825, 3));
-    course3 = new Course('MATH141-0523');
-    course3.meetings.push(new Meeting(840, 890, 0), new Meeting(840, 920, 1), new Meeting(840, 890, 2), new Meeting(840, 920, 3), new Meeting(840, 890, 4));
-    course4 = new Course('COMM107-9920');
-    course4.meetings.push(new Meeting(1020, 1095, 1), new Meeting(1020, 1095, 3));
-    keys.courses.push(course1, course2, course3, course4, course5);
+    const keysArr = [['CMSC132', '0202'], ['BSCI103', '1107'], ['MATH141', '0523'], ['COMM107', '9920']];
+    for (const entry of keysArr){
+        const c = getCourseObj(entry[0], entry[1], SEMESTER).then((c) => {
+            keys.courses.push(c);
+            drawOneCourse(courses, c, 1, 2, keys.color);
+        });
+    }
     people.push(keys);
-
-    // Draw courses
-    const courses = document.querySelector("#courses");
-    drawCourses(courses, people, people.length);
 
     // Button event listeners
     document.getElementById('previousDayButton').addEventListener("click", function () { previousDay(courses, people) });
@@ -158,16 +152,20 @@ function drawCourses(courses, people, cols) {
         // Draw courses
         people.forEach((person, i) => {
             person.courses.forEach((course) => {
-                course.meetings.forEach((meeting) => {
-                    if (weekday == meeting.weekday) {
-                        let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                        drawMeeting(rect, i, cols, meeting.start, meeting.end, person.color);
-                        courses.appendChild(rect);
-                    }
-                });
+                drawOneCourse(courses, course, i, cols, person.color);
             });
         });
     }
+}
+
+function drawOneCourse(courses, courseObj, col, cols, color){
+    courseObj.meetings.forEach((meeting) => {
+        if (weekday == meeting.weekday) {
+            let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            drawMeeting(rect, col, cols, meeting.start, meeting.end, color);
+            courses.appendChild(rect);
+        }
+    });
 }
 
 function previousDay(courses, people) {
