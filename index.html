@@ -7,16 +7,21 @@
 </head>
 
 <body>
-  <svg id="screen"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 115">
-    <rect id="bkgd" width="200" height="115" fill="#fff" stroke="#000" stroke-width="1">
-    </rect>
+  <svg id="screen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 115">
+    <rect id="bkgd" width="200" height="115" fill="#fff" stroke="#000" stroke-width="1" />
     <svg id="header" viewBox="0 50 200 15">
-      <rect id="bkgd" width="200" height="15" fill="transparent" stroke="#000" stroke-width="0.5">
-      </rect>
+      <rect id="bkgd" width="200" height="15" fill="transparent" stroke="#000" stroke-width="0.5" />
+      <a href="#" id="previousDayButton" class="weekdayButton" aria-label="Previous Day">
+        <circle cx="10%" cy="7.5" r="5" />
+        <!-- <span class="chevron left" /> -->
+      </a>
+      <a href="#" id="nextDayButton" class="weekdayButton" aria-label="Next Day">
+        <circle cx="90%" cy="7.5" r="5" />
+        <!-- <span class="chevron right" /> -->
+      </a>
     </svg>
     <svg id="schedule" viewBox="0 -7.5 200 100">
-      <svg id="courses" viewbox="-5 0 190 100">
-      </svg>
+      <svg id="courses" viewbox="-5 0 190 100" />
     </svg>
   </svg>
 

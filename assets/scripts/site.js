@@ -21,14 +21,14 @@ class Person {
     }
 }
 
-
 // Draw header
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const header = document.querySelector('#header');
-let weekday = (new Date(Date.now())).getDay()-1;
+let weekday = (new Date(Date.now())).getDay() - 1;
 
 if (header) {
-    let weekdayLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    // Weekday label
+    const weekdayLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     drawWeekdayLabel(weekdayLabel, daysOfWeek[weekday], 10, '#000');
     header.appendChild(weekdayLabel);
 }
@@ -98,7 +98,11 @@ if (schedule) {
 
     // Draw courses
     const courses = document.querySelector("#courses");
-    drawCourses(people, people.length);
+    drawCourses(courses, people, people.length);
+
+    // Button event listeners
+    document.getElementById('previousDayButton').addEventListener("click", function () { previousDay(courses, people) });
+    document.getElementById('nextDayButton').addEventListener("click", function () { nextDay(courses, people) });
 
 }
 
@@ -118,9 +122,7 @@ function drawHorizLine(line, y, color, size, opacity) {
     line.setAttribute('y2', `${y}%`);
     line.setAttribute('stroke', color);
     line.setAttribute('stroke-width', size);
-    if (opacity) {
-        line.setAttribute('stroke-opacity', opacity);
-    }
+    if (opacity) line.setAttribute('stroke-opacity', opacity);
 }
 
 function drawVertLine(line, x, color, size) {
@@ -157,6 +159,7 @@ function drawWeekdayLabel(label, weekday, size, color) {
     label.setAttribute('x', '50%');
     label.setAttribute('y', '50%');
     label.setAttribute('fill', color);
+    label.setAttribute('id', 'weekdayLabel');
 }
 
 function drawMeeting(rect, col, totalCols, start, end, color) {
@@ -168,12 +171,18 @@ function drawMeeting(rect, col, totalCols, start, end, color) {
     rect.setAttribute('rx', 2); // rounded corners
 }
 
-function drawCourses(people, cols){
-    if (courses && cols > 0) {
+function drawCourses(courses, people, cols) {;
+    if (cols > 0) {
+        // If courses already exist, remove them
+        while(courses.firstChild){
+            courses.removeChild(courses.lastChild);
+        }
+
+        // Draw courses
         people.forEach((person, i) => {
             person.courses.forEach((course) => {
                 course.meetings.forEach((meeting) => {
-                    if (weekday == meeting.weekday){
+                    if (weekday == meeting.weekday) {
                         let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
                         drawMeeting(rect, i, cols, meeting.start, meeting.end, person.color);
                         courses.appendChild(rect);
@@ -181,5 +190,23 @@ function drawCourses(people, cols){
                 });
             });
         });
+    }
+}
+
+function clearCourses(){
+
+}
+
+function previousDay(courses, people) {
+    if (weekday > 0) {
+        weekday--;
+        drawCourses(courses, people, people.length);
+    }
+}
+
+function nextDay(courses, people) {
+    if (weekday < 4) {
+        weekday++;
+        drawCourses(courses, people, people.length);
     }
 }
