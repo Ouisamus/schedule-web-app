@@ -1,26 +1,3 @@
-class Meeting {
-    constructor(start, end, weekday) {
-        this.start = start;
-        this.end = end;
-        this.weekday = weekday; //0-4 corresponding to M-F
-    }
-}
-
-class Course {
-    constructor(name) {
-        this.name = name;
-        this.meetings = new Array();
-    }
-}
-
-class Person {
-    constructor(name, color) {
-        this.name = name;
-        this.color = color;
-        this.courses = new Array();
-    }
-}
-
 // Draw header
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const header = document.querySelector('#header');
@@ -173,12 +150,10 @@ function drawMeeting(rect, col, totalCols, start, end, color) {
     rect.setAttribute('rx', 2); // rounded corners
 }
 
-function drawCourses(courses, people, cols) {;
+function drawCourses(courses, people, cols) {
     if (cols > 0) {
         // If courses already exist, remove them
-        while(courses.firstChild){
-            courses.removeChild(courses.lastChild);
-        }
+        while (courses.firstChild) { courses.removeChild(courses.lastChild); }
 
         // Draw courses
         people.forEach((person, i) => {
