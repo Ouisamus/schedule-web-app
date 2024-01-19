@@ -42,40 +42,45 @@ if (schedule) {
     drawVertLine(verticalLine, 10, '#bbb', '0.5');
     schedule.appendChild(verticalLine);
 
-    // Draw weekday label
-
-    // Establishing people and classes
-    let people = new Array();
-
-    // Loading & drawing courses
+    // Establish people & draw courses
     const courses = document.querySelector("#courses");
+    if (courses) {
+        // Establishing people & courseLists
+        let people = new Array();
+        let courseLists = new Array();
+        people.push(new Person('Ryan', '#9b59b6'), new Person('Keys', '#388fc7'));
+        courseLists.push([['ENGL101', '1002'], ['THET285', '0102'], ['ECON230', '0101'], ['ECON306', '0202'], ['PLCY213', '0201']]);
+        courseLists.push([['CMSC132', '0202'], ['BSCI103', '1107'], ['MATH141', '0523'], ['COMM107', '9920']]);
 
-    // Ryan
-    let ryan = new Person('Ryan', '#9b59b6');
-    const ryanArr = [['ENGL101', '1002'], ['THET285', '0102'], ['ECON230', '0101'], ['ECON306', '0202'], ['PLCY213', '0201']];
-    for (const entry of ryanArr){
-        const c = getCourseObj(entry[0], entry[1], SEMESTER).then((c) => {
-            ryan.courses.push(c);
-            drawOneCourse(courses, c, 0, 2, ryan.color);
+        // Loading in courseLists to people objects
+        loadAllCourseLists(courseLists).then(results => {
+            // Pushes courses onto people
+            results.map((courseList, index) => {
+                courseList.map((courseObj) => {
+                    people[index].courses.push(courseObj);
+                });
+            });
+            // Drawing courses when done
+            drawCourses(courses, people);
         });
+
+        // Button event listeners
+        document.getElementById('previousDayButton').addEventListener("click", function () { previousDay(courses, people) });
+        document.getElementById('nextDayButton').addEventListener("click", function () { nextDay(courses, people) });
     }
-    people.push(ryan);
 
-    // // Keys
-    let keys = new Person('Keys', '#388fc7');
-    const keysArr = [['CMSC132', '0202'], ['BSCI103', '1107'], ['MATH141', '0523'], ['COMM107', '9920']];
-    for (const entry of keysArr){
-        const c = getCourseObj(entry[0], entry[1], SEMESTER).then((c) => {
-            keys.courses.push(c);
-            drawOneCourse(courses, c, 1, 2, keys.color);
-        });
-    }
-    people.push(keys);
+}
 
-    // Button event listeners
-    document.getElementById('previousDayButton').addEventListener("click", function () { previousDay(courses, people) });
-    document.getElementById('nextDayButton').addEventListener("click", function () { nextDay(courses, people) });
+function loadAllCourseLists(courseListsArr) {
+    let peoplePromises = courseListsArr.map(courseList => loadCourseList(courseList));
+    let allPromises = Promise.all(peoplePromises);
+    return allPromises;
+}
 
+function loadCourseList(courseList) {
+    let courseObjPromises = courseList.map(course => getCourseObj(course[0], course[1], '202401'));
+    let allPromises = Promise.all(courseObjPromises);
+    return allPromises;
 }
 
 function updateCurrentTime() {
@@ -144,7 +149,8 @@ function drawMeeting(rect, col, totalCols, start, end, color) {
     rect.setAttribute('rx', 2); // rounded corners
 }
 
-function drawCourses(courses, people, cols) {
+function drawCourses(courses, people) {
+    let cols = people.length;
     if (cols > 0) {
         // If courses already exist, remove them
         while (courses.firstChild) { courses.removeChild(courses.lastChild); }
@@ -158,11 +164,11 @@ function drawCourses(courses, people, cols) {
     }
 }
 
-function drawOneCourse(courses, courseObj, col, cols, color){
+function drawOneCourse(courses, courseObj, col, totalCols, color) {
     courseObj.meetings.forEach((meeting) => {
         if (weekday == meeting.weekday) {
             let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            drawMeeting(rect, col, cols, meeting.start, meeting.end, color);
+            drawMeeting(rect, col, totalCols, meeting.start, meeting.end, color);
             courses.appendChild(rect);
         }
     });
@@ -171,7 +177,7 @@ function drawOneCourse(courses, courseObj, col, cols, color){
 function previousDay(courses, people) {
     if (weekday > 0) {
         weekday--;
-        drawCourses(courses, people, people.length);
+        drawCourses(courses, people);
         document.getElementById('weekdayLabel').firstChild.nodeValue = daysOfWeek[weekday];
         updateCurrentTime();
     }
@@ -180,7 +186,7 @@ function previousDay(courses, people) {
 function nextDay(courses, people) {
     if (weekday < 4) {
         weekday++;
-        drawCourses(courses, people, people.length);
+        drawCourses(courses, people);
         document.getElementById('weekdayLabel').firstChild.nodeValue = daysOfWeek[weekday];
         updateCurrentTime();
     }
