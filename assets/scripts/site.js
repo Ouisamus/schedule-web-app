@@ -3,6 +3,8 @@ const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const header = document.getElementById('header');
 const SEMESTER = '202401';
 let weekday = (new Date(Date.now())).getDay() - 1;
+let colorPalette = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928'];
+const numberOfHrs = 14; // starts at 8am, very few courses start before then
 
 if (header) {
     // Weekday label
@@ -22,14 +24,13 @@ if (header) {
 }
 
 // Draw schedule
-const period = 12;
 const schedule = document.getElementById('schedule');
 
 if (schedule) {
     // Draw hour lines
-    for (let i = 1; i < period; i++) {
+    for (let i = 1; i < numberOfHrs; i++) {
         let hourLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        drawHorizLine(hourLine, 100 / period * i, '#bbb', '0.5');
+        drawHorizLine(hourLine, 100 / numberOfHrs * i, '#bbb', '0.5');
         schedule.prepend(hourLine);
     }
 
@@ -43,9 +44,9 @@ if (schedule) {
     const intervalID = setInterval(updateCurrentTime, 2000);
 
     // Draw hour labels
-    for (let i = 1; i <= period; i++) {
+    for (let i = 1; i <= numberOfHrs; i++) {
         let hourLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        drawHourLabel(hourLabel, i + 8, 3, 100 / period * i - 1, '#000');
+        drawHourLabel(hourLabel, i + 8, 3, 100 / numberOfHrs * i - 1, '#000');
         schedule.appendChild(hourLabel);
     }
     let verticalLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -59,13 +60,18 @@ if (schedule) {
         let people = new Array();
         let courseLists = new Array();
         people.push(new Person('Ryan', '#9b59b6'), new Person('Keys', '#388fc7'), new Person('Willa', '#8FAE53'),
-            new Person('Alphonse', '#2ECC71'), new Person('Kristin', 'BA88F8'), new Person('Ian', '#37DFBE'));
+            new Person('Alphonse', '#2ECC71'), new Person('Kristin', '#BA88F8'), new Person('Ian', '#37DFBE'),
+            new Person('Adib', '#BE2F96'), new Person('Eitan', '#5384EC'), new Person('Jack', '#8721B2'), new Person('Jacob', '#DB7093'));
         courseLists.push([['ENGL101', '1002'], ['THET285', '0102'], ['ECON230', '0101'], ['ECON306', '0202'], ['PLCY213', '0201']],
             [['CMSC132', '0202'], ['BSCI103', '1107'], ['MATH141', '0523'], ['COMM107', '9920']],
             [['CMSC132', '0202'], ['ARHU275', '0101'], ['MATH240', '0122'], ['ENGL101', '1101'], ['JOUR284', '0101']],
-            [['CHEM237', '5355'], ['PHYS161', '0306'], ['BSCI223', '2401'], ['ENGL272', '0201'], ['BSCI223', '2401'], ['CHEM237', '5355']],
+            [['CHEM237', '5355'], ['PHYS161', '0306'], ['BSCI223', '2401'], ['ENGL272', '0201'], ['BSCI223', '2401'], ['CHEM237', '5355'], ['MUSC229U', '0101']],
             [['PHYS265', '0101'], ['PHYS274', '0101'], ['PHYS275', '0201'], ['ENGL272', '0201'], ['GEMS104', '0111'], ['GEMS102', '0101']],
-            [['BIOE121', '0104'], ['MATH246H', '0201'], ['BIOE120', '0201'], ['BIOE241', '0102'], ['ENES100', '0401'], ['GEMS104', '0101'], ['GEMS102', '0101']]);
+            [['BIOE121', '0104'], ['MATH246H', '0201'], ['BIOE120', '0201'], ['BIOE241', '0102'], ['ENES100', '0401'], ['GEMS104', '0101'], ['GEMS102', '0101']],
+            [['BIOE121', '0102'], ['MATH461', '0112'], ['PHYS161', '0303'], ['BIOE241', '0102'], ['ENES100', '0402'], ['BIOE120', '0102'], ['MUSC229U', '0101']],
+            [['MATH141', '0131'], ['ENES102', '0701'], ['ENAE202', '0103'], ['PHYS161', '0305'], ['COMM107', '6801']],
+            [['BMGT110S', '0101'], ['THET110', '0107'], ['CMSC132', '0205'], ['THET380', '5501'], ['ENGL101S', '1309']],
+            [['STAT100', '0131'], ['ENGL265', '0201'], ['ARTT110', '0401'], ['ENGL272', '0201'], ['BSCI103', '1109']]);
 
         // Loading in courseLists to people objects
         loadAllCourseLists(courseLists).then(results => {
@@ -112,7 +118,7 @@ function updateCurrentTime() {
     let opacity = currentTime.getDay() - 1 == weekday ? 1 : 0.4; // less opacity when it's not today
     currentTime = currentTime.getHours() * 60 + currentTime.getMinutes();
     if (currentTime >= 480 && currentTime <= 1200) { // between 8am and 8pm?
-        drawHorizLine(line, (100 / 720) * (currentTime - 480), '#f00', '0.5', opacity);
+        drawHorizLine(line, (100 / (numberOfHrs * 60)) * (currentTime - 480), '#f00', '0.5', opacity);
     }
 }
 
@@ -166,18 +172,12 @@ function drawWeekdayLabel(label, weekday, size, color) {
 function drawMeeting(rect, col, totalCols, person, meeting, courseName, autoColor) {
     let start = meeting.start;
     let end = meeting.end;
-    let color;
-
-    if (autoColor) {
-        color = 'hsl(0, 100%, 50%)';
-    } else {
-        color = person.color;
-    }
+    let color = autoColor ? colorPalette[col % colorPalette.length] : person.color;
 
     rect.setAttribute('x', `${100 / totalCols * col}%`);
-    rect.setAttribute('y', `${(100 / 720) * (start - 480)}%`);
+    rect.setAttribute('y', `${(100 / (numberOfHrs * 60)) * (start - 480)}%`);
     rect.setAttribute('width', `${100 / totalCols}%`);
-    rect.setAttribute('height', `${(100 / 720) * (end - start)}%`);
+    rect.setAttribute('height', `${(100 / (numberOfHrs * 60)) * (end - start)}%`);
     rect.setAttribute('fill', color);
     rect.setAttribute('rx', 2); // rounded corners
     rect.classList.add('meeting');
@@ -204,7 +204,7 @@ function drawOneCourse(courses, course, person, col, totalCols) {
     course.meetings.forEach((meeting) => {
         if (weekday == meeting.weekday) {
             let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            drawMeeting(rect, col, totalCols, person, meeting, course.name);
+            drawMeeting(rect, col, totalCols, person, meeting, course.name, true);
             courses.appendChild(rect);
         }
     });
