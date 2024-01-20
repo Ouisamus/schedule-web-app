@@ -1,6 +1,6 @@
 // Draw header
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-const header = document.querySelector('#header');
+const header = document.getElementById('header');
 const SEMESTER = '202401';
 let weekday = (new Date(Date.now())).getDay() - 1;
 
@@ -9,18 +9,28 @@ if (header) {
     const weekdayLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     drawWeekdayLabel(weekdayLabel, daysOfWeek[weekday], 10, '#000');
     header.appendChild(weekdayLabel);
+
+    // Disables arrows if needed
+    if(weekday == 0){
+        // Disable left arrow button
+        document.getElementById('previousDayButton').classList.add('grayout');
+    } else if (weekday == 4){
+        // Disable right arrow button
+        document.getElementById('nextDayButton').classList.add('grayout');
+
+    }
 }
 
 // Draw schedule
 const period = 12;
-const schedule = document.querySelector('#schedule');
+const schedule = document.getElementById('schedule');
 
 if (schedule) {
     // Draw hour lines
     for (let i = 1; i < period; i++) {
         let hourLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
         drawHorizLine(hourLine, 100 / period * i, '#bbb', '0.5');
-        schedule.appendChild(hourLine);
+        schedule.prepend(hourLine);
     }
 
     // Create current time line
@@ -40,7 +50,7 @@ if (schedule) {
     }
     let verticalLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     drawVertLine(verticalLine, 10, '#bbb', '0.5');
-    schedule.appendChild(verticalLine);
+    schedule.prepend(verticalLine);
 
     // Establish people & draw courses
     const courses = document.querySelector("#courses");
@@ -52,6 +62,9 @@ if (schedule) {
         courseLists.push([['ENGL101', '1002'], ['THET285', '0102'], ['ECON230', '0101'], ['ECON306', '0202'], ['PLCY213', '0201']]);
         courseLists.push([['CMSC132', '0202'], ['BSCI103', '1107'], ['MATH141', '0523'], ['COMM107', '9920']]);
 
+        // Sort people array by name
+        people.sort((a, b) => a.name.localeCompare(b.name));
+        
         // Loading in courseLists to people objects
         loadAllCourseLists(courseLists).then(results => {
             // Pushes courses onto people
@@ -86,7 +99,7 @@ function loadCourseList(courseList) {
 function updateCurrentTime() {
     const line = document.getElementById('nowLine')
     let currentTime = new Date(Date.now());
-    let opacity = currentTime.getDay() - 1 == weekday ? 1 : 0.3; // less opacity when it's not today
+    let opacity = currentTime.getDay() - 1 == weekday ? 1 : 0.4; // less opacity when it's not today
     currentTime = currentTime.getHours() * 60 + currentTime.getMinutes();
     if (currentTime >= 480 && currentTime <= 1200) { // between 8am and 8pm?
         drawHorizLine(line, (100 / 720) * (currentTime - 480), '#f00', '0.5', opacity);
@@ -147,6 +160,7 @@ function drawMeeting(rect, col, totalCols, start, end, color) {
     rect.setAttribute('height', `${(100 / 720) * (end - start)}%`);
     rect.setAttribute('fill', color);
     rect.setAttribute('rx', 2); // rounded corners
+    rect.classList.add('meeting');
 }
 
 function drawCourses(courses, people) {
@@ -158,7 +172,7 @@ function drawCourses(courses, people) {
         // Draw courses
         people.forEach((person, i) => {
             person.courses.forEach((course) => {
-                drawOneCourse(courses, course, i, cols, person.color);
+                drawOneCourse(courses, course, i, cols, person.color, person.name);
             });
         });
     }
@@ -180,6 +194,15 @@ function previousDay(courses, people) {
         drawCourses(courses, people);
         document.getElementById('weekdayLabel').firstChild.nodeValue = daysOfWeek[weekday];
         updateCurrentTime();
+
+        // Updating arrows to be grayed out or not
+        let previousDay = document.getElementById('previousDayButton');
+        let nextDay = document.getElementById('nextDayButton');
+        if (nextDay.classList.contains('grayout')){
+            nextDay.classList.remove('grayout');
+        } else if (weekday == 0){
+            previousDay.classList.add('grayout');
+        }
     }
 }
 
@@ -189,5 +212,14 @@ function nextDay(courses, people) {
         drawCourses(courses, people);
         document.getElementById('weekdayLabel').firstChild.nodeValue = daysOfWeek[weekday];
         updateCurrentTime();
+
+        // Updating arrows to be grayed out or not
+        let previousDay = document.getElementById('previousDayButton');
+        let nextDay = document.getElementById('nextDayButton');
+        if (previousDay.classList.contains('grayout')){
+            previousDay.classList.remove('grayout');
+        } else if (weekday == 4){
+            nextDay.classList.add('grayout');
+        }
     }
 }

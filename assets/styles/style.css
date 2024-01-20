@@ -9,36 +9,31 @@ html, body{
 }
 
 /* previous/next buttons */
-.weekdayButton{
+.weekdayButtonCircle{
     fill: #ddd;
     fill-opacity: 0;
     transition-duration: 0.2s;
 }
 
-.weekdayButton:hover{
+.weekdayButton:hover:not(.grayout) .weekdayButtonCircle{
     fill-opacity: 1;
 }
 
-/* .chevron{
-    border-style: solid;
-	border-width: 0.25em 0.25em 0 0;
-	content: '';
-	display: inline-block;
-	height: 0.45em;
-	left: 0.15em;
-	position: relative;
-	top: 0.15em;
-	transform: rotate(-45deg);
-	vertical-align: top;
-	width: 0.45em;
+.weekdayButtonChevron{
+    stroke: #777;
+    stroke-width: 0.3;
+    fill: transparent;
 }
 
-.chevron.left{
-	left: 0.25em;
-	transform: rotate(-135deg);
+.grayout{
+    cursor: default;
 }
 
-.chevron.right{
-	left: 0;
-	transform: rotate(45deg);    
-} */
+.grayout .weekdayButtonChevron{
+    stroke: #ccc;
+    transition-duration: 0.2s;
+}
+
+.meeting:hover {
+    filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
+}
