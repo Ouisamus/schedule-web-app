@@ -11,10 +11,10 @@ if (header) {
     header.appendChild(weekdayLabel);
 
     // Disables arrows if needed
-    if(weekday == 0){
+    if (weekday == 0) {
         // Disable left arrow button
         document.getElementById('previousDayButton').classList.add('grayout');
-    } else if (weekday == 4){
+    } else if (weekday == 4) {
         // Disable right arrow button
         document.getElementById('nextDayButton').classList.add('grayout');
 
@@ -58,13 +58,15 @@ if (schedule) {
         // Establishing people & courseLists
         let people = new Array();
         let courseLists = new Array();
-        people.push(new Person('Ryan', '#9b59b6'), new Person('Keys', '#388fc7'));
-        courseLists.push([['ENGL101', '1002'], ['THET285', '0102'], ['ECON230', '0101'], ['ECON306', '0202'], ['PLCY213', '0201']]);
-        courseLists.push([['CMSC132', '0202'], ['BSCI103', '1107'], ['MATH141', '0523'], ['COMM107', '9920']]);
+        people.push(new Person('Ryan', '#9b59b6'), new Person('Keys', '#388fc7'), new Person('Willa', '#8FAE53'),
+            new Person('Alphonse', '#2ECC71'), new Person('Kristin', 'BA88F8'), new Person('Ian', '#37DFBE'));
+        courseLists.push([['ENGL101', '1002'], ['THET285', '0102'], ['ECON230', '0101'], ['ECON306', '0202'], ['PLCY213', '0201']],
+            [['CMSC132', '0202'], ['BSCI103', '1107'], ['MATH141', '0523'], ['COMM107', '9920']],
+            [['CMSC132', '0202'], ['ARHU275', '0101'], ['MATH240', '0122'], ['ENGL101', '1101'], ['JOUR284', '0101']],
+            [['CHEM237', '5355'], ['PHYS161', '0306'], ['BSCI223', '2401'], ['ENGL272', '0201'], ['BSCI223', '2401'], ['CHEM237', '5355']],
+            [['PHYS265', '0101'], ['PHYS274', '0101'], ['PHYS275', '0201'], ['ENGL272', '0201'], ['GEMS104', '0111'], ['GEMS102', '0101']],
+            [['BIOE121', '0104'], ['MATH246H', '0201'], ['BIOE120', '0201'], ['BIOE241', '0102'], ['ENES100', '0401'], ['GEMS104', '0101'], ['GEMS102', '0101']]);
 
-        // Sort people array by name
-        people.sort((a, b) => a.name.localeCompare(b.name));
-        
         // Loading in courseLists to people objects
         loadAllCourseLists(courseLists).then(results => {
             // Pushes courses onto people
@@ -73,6 +75,8 @@ if (schedule) {
                     people[index].courses.push(courseObj);
                 });
             });
+            // Sort people array by name
+            people.sort((a, b) => a.name.localeCompare(b.name));
             // Drawing courses when done
             drawCourses(courses, people);
         });
@@ -80,6 +84,12 @@ if (schedule) {
         // Button event listeners
         document.getElementById('previousDayButton').addEventListener("click", function () { previousDay(courses, people) });
         document.getElementById('nextDayButton').addEventListener("click", function () { nextDay(courses, people) });
+
+        // Courses event listener, prints course info to console
+        courses.addEventListener("click", function (event) {
+            let target = event.target;
+            console.log(`${target.getAttribute('data-person')}: ${target.getAttribute('data-course')}`);
+        });
     }
 
 }
@@ -153,7 +163,17 @@ function drawWeekdayLabel(label, weekday, size, color) {
     label.setAttribute('id', 'weekdayLabel');
 }
 
-function drawMeeting(rect, col, totalCols, start, end, color) {
+function drawMeeting(rect, col, totalCols, person, meeting, courseName, autoColor) {
+    let start = meeting.start;
+    let end = meeting.end;
+    let color;
+
+    if (autoColor) {
+        color = 'hsl(0, 100%, 50%)';
+    } else {
+        color = person.color;
+    }
+
     rect.setAttribute('x', `${100 / totalCols * col}%`);
     rect.setAttribute('y', `${(100 / 720) * (start - 480)}%`);
     rect.setAttribute('width', `${100 / totalCols}%`);
@@ -161,6 +181,8 @@ function drawMeeting(rect, col, totalCols, start, end, color) {
     rect.setAttribute('fill', color);
     rect.setAttribute('rx', 2); // rounded corners
     rect.classList.add('meeting');
+    rect.setAttribute('data-person', person.name);
+    rect.setAttribute('data-course', courseName);
 }
 
 function drawCourses(courses, people) {
@@ -172,17 +194,17 @@ function drawCourses(courses, people) {
         // Draw courses
         people.forEach((person, i) => {
             person.courses.forEach((course) => {
-                drawOneCourse(courses, course, i, cols, person.color, person.name);
+                drawOneCourse(courses, course, person, i, cols);
             });
         });
     }
 }
 
-function drawOneCourse(courses, courseObj, col, totalCols, color) {
-    courseObj.meetings.forEach((meeting) => {
+function drawOneCourse(courses, course, person, col, totalCols) {
+    course.meetings.forEach((meeting) => {
         if (weekday == meeting.weekday) {
             let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            drawMeeting(rect, col, totalCols, meeting.start, meeting.end, color);
+            drawMeeting(rect, col, totalCols, person, meeting, course.name);
             courses.appendChild(rect);
         }
     });
@@ -198,9 +220,9 @@ function previousDay(courses, people) {
         // Updating arrows to be grayed out or not
         let previousDay = document.getElementById('previousDayButton');
         let nextDay = document.getElementById('nextDayButton');
-        if (nextDay.classList.contains('grayout')){
+        if (nextDay.classList.contains('grayout')) {
             nextDay.classList.remove('grayout');
-        } else if (weekday == 0){
+        } else if (weekday == 0) {
             previousDay.classList.add('grayout');
         }
     }
@@ -216,9 +238,9 @@ function nextDay(courses, people) {
         // Updating arrows to be grayed out or not
         let previousDay = document.getElementById('previousDayButton');
         let nextDay = document.getElementById('nextDayButton');
-        if (previousDay.classList.contains('grayout')){
+        if (previousDay.classList.contains('grayout')) {
             previousDay.classList.remove('grayout');
-        } else if (weekday == 4){
+        } else if (weekday == 4) {
             nextDay.classList.add('grayout');
         }
     }
