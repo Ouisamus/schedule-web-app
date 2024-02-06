@@ -14,7 +14,6 @@ function getCourseObj(course, section, semester) { // return type Course object 
                 .then((response) => {
                     let courseObj = new Course(`${course}-${section}`); // Creates course object
                     const sectionTimes = response.data[course].sections[section].meetings;
-                    console.log(courseObj);
                     sectionTimes.forEach((row) => {
                         if (row.days && row.start && row.end){
                             let dayString = row.days;
