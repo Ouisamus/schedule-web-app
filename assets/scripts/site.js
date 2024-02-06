@@ -255,7 +255,10 @@ function nextDay(courses, people) {
 }
 
 function drawLegend(people, autoColor){
-    people.map((person, index) => {
+        // If legend entries already exist, remove them
+        while (legend.firstChild) { legend.removeChild(legend.lastChild); }
+
+    people.forEach((person, index) => {
         let color = autoColor ? colorPalette[index % colorPalette.length] : person.color;
         // Create item
         let legendEntry = document.createElement('li');
