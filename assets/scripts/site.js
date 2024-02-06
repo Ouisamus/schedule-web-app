@@ -27,6 +27,7 @@ if (header) {
 
 // Draw schedule
 const schedule = document.getElementById('schedule');
+const legend = document.getElementById('scheduleLegend');
 
 if (schedule) {
     // Draw hour lines
@@ -88,6 +89,8 @@ if (schedule) {
             });
             // Sort people array by name
             people.sort((a, b) => a.name.localeCompare(b.name));
+            // Add people to legend
+            drawLegend(people, AUTOCOLOR);
             // Drawing courses when done
             drawCourses(courses, people);
         });
@@ -249,4 +252,23 @@ function nextDay(courses, people) {
             nextDay.classList.add('grayout');
         }
     }
+}
+
+function drawLegend(people, autoColor){
+    people.map((person, index) => {
+        let color = autoColor ? colorPalette[index % colorPalette.length] : person.color;
+        // Create item
+        let legendEntry = document.createElement('li');
+        legendEntry.classList.add('scheduleLegendRow');
+        // Create colored square
+        let colorSquare = document.createElement('span');
+        colorSquare.classList.add('colorSquare');
+        colorSquare.setAttribute('style', `display: inline-block; background: ${color}`);
+        legendEntry.append(colorSquare);
+        // Create text
+        let legendEntryText = document.createElement('p');
+        legendEntryText.innerText = person.name;
+        legendEntry.append(legendEntryText);
+        legend.append(legendEntry);
+    });
 }
