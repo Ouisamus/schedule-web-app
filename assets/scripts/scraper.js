@@ -1,30 +1,25 @@
 const dayNums = new Map([['M', 0], ['Tu', 1], ['W', 2], ['Th', 3], ['F', 4]]);
 
 function getCourseObj(course, section, semester) { // return type Course object or return false
+    const dept = course.substring(0,4);
     return new Promise((resolve, reject) => {
-        let courseURL = `https://app.testudo.umd.edu/soc/${semester}/sections?courseIds=${course}`;
+        const deptURL = `https://waitlist-watcher.uk.r.appspot.com/raw/${semester}/${dept}/snapshots`;
 
         // Retrieve URL data using axios
         axios
-            .get(courseURL)
+            .get(deptURL)
             .then((response) => {
-                let courseObj = new Course(`${course}-${section}`); // Creates course object
-                response.data = response.data.replaceAll(/<img src=.*?>/g, ""); // removes all <img> tags to prevent missing file errors
-                const coursePage = document.createElement('coursePage');
-                coursePage.innerHTML = response.data.trim();
-                if (coursePage.querySelector(`input[value="${section}"]`)) {
-                    let sectionInfo = coursePage.querySelector(`input[value="${section}"]`).parentNode // finds specific section from list
-                    let sectionTimes = sectionInfo
-                        .querySelector('.class-days-container')
-                        .querySelectorAll('.section-day-time-group');
+                const latestSnapshotURL = response.data.snapshots[response.data.snapshots.length-1].url;
+                axios.get(latestSnapshotURL)
+                .then((response) => {
+                    let courseObj = new Course(`${course}-${section}`); // Creates course object
+                    const sectionTimes = response.data[course].sections[section].meetings;
+                    console.log(courseObj);
                     sectionTimes.forEach((row) => {
-                        if (row.querySelector('.section-days')) { // "See details on ELMS" and similar msgs are ignored
-
-                            let dayString = row.querySelector('.section-days').innerText;
-                            let startTime = row.querySelector('.class-start-time').innerText;
-                            startTime = convertClockTimeToMins(startTime);
-                            let endTime = row.querySelector('.class-end-time').innerText;
-                            endTime = convertClockTimeToMins(endTime);
+                        if (row.days && row.start && row.end){
+                            let dayString = row.days;
+                            let startTime = convertClockTimeToMins(row.start);
+                            let endTime = convertClockTimeToMins(row.end);
 
                             let days = new Array();
                             for (const char of dayString) {
@@ -38,16 +33,17 @@ function getCourseObj(course, section, semester) { // return type Course object 
                                 let m = new Meeting(startTime, endTime, dayNums.get(day));
                                 courseObj.meetings.push(m);
                             }
-
-                        } // end if row has days
+                        }
                     }); // end for each row
                     resolve(courseObj);
-                } else {
-                    reject('Course not found');
-                }
+                })
+                .catch((error) => {
+                    console.log(`error getting latest snapshot page for ${course} in ${dept}`);
+                    reject(error);
+             });
             })
             .catch((error) => {
-                console.log('error :(');
+                console.log(`error getting snapshots for ${course} in ${dept}`);
                 reject(error);
             });
     });
