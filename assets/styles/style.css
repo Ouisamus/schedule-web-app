@@ -70,10 +70,11 @@ p{
     user-select: none;
 }
 
-.scheduleLegendRow.grayout {
-    opacity: .5;
-}
-
 .scheduleLegendRow.grayout p{
     text-decoration: line-through;
+    opacity: .6;
+}
+
+.scheduleLegendRow.grayout .colorSquare{
+    border-color: transparent;
 }
