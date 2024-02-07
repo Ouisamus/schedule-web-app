@@ -77,7 +77,7 @@ if (schedule) {
             /* Jack */ [['BMGT110S', '0101'], ['THET110', '0107'], ['CMSC132', '0205'], ['THET380', '5501'], ['ENGL101S', '1309']],
             /* Jacob */ [['STAT100', '0131'], ['ENGL265', '0201'], ['ARTT110', '0401'], ['ENGL272', '0201'], ['BSCI103', '1109']],
             /* Bryan */ [['CMSC132', '0201'], ['MATH241', '0312'], ['MATH240', '0123'], ['NFSC220', '0101'], ['MUSC229U', '0101']],
-            /* Louisa */ [['CMSC132', '0103'], ['COMM107', '6801'], ['MATH461', '0133'], ['PSYC100', '0503'], ['THET377', '5501']]);
+            /* Louisa */ [['CMSC132', '0105'], ['COMM107', '6801'], ['MATH461', '0133'], ['PSYC100', '0503'], ['THET377', '5501']]);
 
         // Loading in courseLists to people objects
         loadAllCourseLists(courseLists).then(results => {
