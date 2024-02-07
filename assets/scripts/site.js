@@ -111,25 +111,46 @@ if (schedule) {
         });
 
         // Legend event listener, adds/removes people from peopleToDraw set
-        legend.addEventListener("click", function (event) { legendClick(event.target, courses, allPeople, peopleToDraw) });
+        legend.addEventListener("click", function (event) {
+            let target = event.target;
+            let targetContainer = target.classList.contains("scheduleLegendRow") ? target : target.parentNode;
+            if (targetContainer.classList.contains("scheduleLegendRow")) {
+                let setItemState = targetContainer.classList.contains("grayout");
+                legendSetItem(targetContainer, peopleToDraw, setItemState);
+                drawCourses(courses, allPeople, peopleToDraw);
+            }
+         });
+
+        // Legend selector event listeners
+        // Select all people
+        document.getElementById('selectAllButton').addEventListener("click", function () {
+            for (legendItem of legend.children) {
+                legendSetItem(legendItem, peopleToDraw, true);
+            }
+            drawCourses(courses, allPeople, peopleToDraw);
+        });
+        // Deselect all people
+        document.getElementById('deselectAllButton').addEventListener("click", function () {
+            for (legendItem of legend.children) {
+                legendSetItem(legendItem, peopleToDraw, false);
+            }
+            drawCourses(courses, allPeople, peopleToDraw);
+        });
 
     } // end if courses
 
 } // end if schedule
 
-function legendClick(target, courses, allPeople, peopleToDraw) {
-    let targetContainer = target.classList.contains("scheduleLegendRow") ? target : target.parentNode;
-    if (targetContainer.classList.contains("scheduleLegendRow")) {
-        let name = targetContainer.children[1];
-        if (name.innerText) { // checks if selected element has text
-            targetContainer.classList.toggle("grayout");
-            name = name.innerText;
-            if (peopleToDraw.has(name)) {
-                peopleToDraw.delete(name);
-            } else {
-                peopleToDraw.add(name);
-            }
-            drawCourses(courses, allPeople, peopleToDraw);
+function legendSetItem(targetContainer, peopleToDraw, setItemOnOff) {
+    let name = targetContainer.children[1];
+    if (name.innerText) { // checks if selected element has text
+        name = name.innerText;
+        if (setItemOnOff){ // set to On
+            if (targetContainer.classList.contains("grayout")) { targetContainer.classList.remove("grayout") }
+            if (!peopleToDraw.has(name)) { peopleToDraw.add(name) }
+        } else { // set to Off
+            if (!targetContainer.classList.contains("grayout")) { targetContainer.classList.add("grayout") }
+            if (peopleToDraw.has(name)) { peopleToDraw.delete(name) }
         }
     }
 }

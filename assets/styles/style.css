@@ -1,6 +1,6 @@
 html, body{
     background: #eee;
-    margin: 0 2%;
+    margin: 0.25em 2%;
 }
 
 #schedule{
@@ -38,8 +38,7 @@ html, body{
     filter: drop-shadow(0 0 1px rgba(0,0,0,0.5));
 }
 
-p{
-    font-size: 1.25em;
+p, button{
     margin: 0px;
     font-family: Arial, Helvetica, sans-serif;
 }
@@ -49,6 +48,7 @@ p{
     flex-direction: row;
     flex-wrap: wrap;
     gap: 6px;
+    margin: 7px 0;
 }
 
 .scheduleLegendRow{
@@ -68,6 +68,7 @@ p{
 
 .scheduleLegendRow p{
     user-select: none;
+    font-size: 1.25em;
 }
 
 .scheduleLegendRow.grayout p{
@@ -77,4 +78,16 @@ p{
 
 .scheduleLegendRow.grayout .colorSquare{
     border-color: transparent;
+}
+
+.legendButton{
+    margin-right: 7px;
+    border: 2px solid black;
+    font-size: 1.1em;
+    cursor: pointer;
+    background-color: #ccc;
+}
+
+#legendButtonsContainer{
+    margin-left: 15px;
 }

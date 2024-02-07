@@ -10,6 +10,10 @@
 
 <body>
   <div width=100px>
+    <div id="legendButtonsContainer">
+      <button class="legendButton" id="selectAllButton">Select all</button>
+      <button class="legendButton" id="deselectAllButton">Deselect all</button>
+    </div>
     <ul id="scheduleLegend" style="list-style-type: none; padding: 0px">
     </ul>
   </div>
@@ -20,17 +24,13 @@
       <a href="#" id="previousDayButton" class="weekdayButton" aria-label="Previous Day">
         <svg viewbox="25 0 5 5">
           <circle class="weekdayButtonCircle" cx="50%" cy="50%" r="1.75" />
-          <path d="M2.9415 1.3 l-1.25 1.25 l1.25 1.25"
-            class="weekdayButtonChevron"
-            id="weekdayLeftChevron"/>
+          <path d="M2.9415 1.3 l-1.25 1.25 l1.25 1.25" class="weekdayButtonChevron" id="weekdayLeftChevron" />
         </svg>
       </a>
       <a href="#" id="nextDayButton" class="weekdayButton" aria-label="Next Day">
         <svg viewbox="-25 0 5 5">
           <circle class="weekdayButtonCircle" cx="50%" cy="50%" r="1.75" />
-          <path d="M2.0585 1.3 l1.25 1.25 l-1.25 1.25"
-            class="weekdayButtonChevron"
-            id="weekdayRightChevron"/>
+          <path d="M2.0585 1.3 l1.25 1.25 l-1.25 1.25" class="weekdayButtonChevron" id="weekdayRightChevron" />
         </svg>
       </a>
     </svg>
