@@ -25,11 +25,11 @@ html, body{
     fill: transparent;
 }
 
-.grayout{
+.weekdayButton.grayout{
     cursor: default;
 }
 
-.grayout .weekdayButtonChevron{
+.weekdayButton.grayout .weekdayButtonChevron{
     stroke: #ccc;
     transition-duration: 0.2s;
 }
@@ -68,4 +68,12 @@ p{
 
 .scheduleLegendRow p{
     user-select: none;
+}
+
+.scheduleLegendRow.grayout {
+    opacity: .5;
+}
+
+.scheduleLegendRow.grayout p{
+    text-decoration: line-through;
 }

@@ -5,7 +5,7 @@ const SEMESTER = '202401';
 const AUTOCOLOR = true;
 let weekday = (new Date(Date.now())).getDay() - 1;
 weekday = weekday <= 4 && weekday >= 0 ? weekday : 0;
-let colorPalette = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#FAEC54','#b15928'];
+let colorPalette = ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a', '#FAEC54', '#b15928'];
 let numberOfHrs = 14;
 let startHr = 8; // starts at 8am, few classes start before then
 
@@ -50,68 +50,93 @@ if (schedule) {
     // Draw hour labels
     for (let i = 1; i <= numberOfHrs; i++) {
         let hourLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        drawHourLabel(hourLabel, (i-1) + startHr, 3, 100 / numberOfHrs * i - 4, '#000');
+        drawHourLabel(hourLabel, (i - 1) + startHr, 3, 100 / numberOfHrs * i - 4, '#000');
         schedule.appendChild(hourLabel);
     }
     let verticalLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     drawVertLine(verticalLine, 10, '#bbb', '0.5');
     schedule.prepend(verticalLine);
 
-    // Establish people & draw courses
+    // Establish allPeople & draw courses
     const courses = document.querySelector("#courses");
     if (courses) {
-        // Establishing people & courseLists
-        let people = new Array();
+        // Establishing allPeople & courseLists
+        let allPeople = new Array();
+        let peopleToDraw = new Set();
         let courseLists = new Array();
-        people.push(new Person('Ryan', '#9b59b6'), new Person('Keys', '#388fc7'), new Person('Willa', '#8FAE53'),
+        allPeople.push(new Person('Ryan', '#9b59b6'), new Person('Keys', '#388fc7'), new Person('Willa', '#8FAE53'),
             new Person('Alphonse', '#2ECC71'), new Person('Kristin', '#BA88F8'), new Person('Ian', '#37DFBE'),
             new Person('Adib', '#BE2F96'), new Person('Eitan', '#5384EC'), new Person('Jack', '#8721B2'),
             new Person('Jacob', '#DB7093'), new Person('Bryan', '#1F8B4C'), new Person('Louisa', '#F1C40F'));
-        courseLists.push([ /* Ryan */ ['ENGL101', '1002'], ['THET285', '0102'], ['ECON230', '0101'], ['ECON306', '0202'], ['PLCY213', '0201']],
-            /* Keys */ [['CMSC132', '0202'], ['BSCI103', '1107'], ['MATH141', '0523'], ['COMM107', '9920']],
-            /* Willa */ [['CMSC132', '0202'], ['ARHU275', '0101'], ['MATH240', '0122'], ['ENGL101', '1101'], ['JOUR284', '0101']],
-            /* Alphonse */ [['CHEM237', '5355'], ['PHYS161', '0306'], ['BSCI223', '2401'], ['ENGL272', '0201'], ['BSCI223', '2401'], ['CHEM237', '5355'], ['MUSC229U', '0101']],
-            /* Kristin */  [['PHYS265', '0101'], ['CHEM135', '3127'], ['ENCE100', '0101'], ['ENGL272', '0201'], ['GEMS104', '0111'], ['GEMS102', '0101']],
-            /* Ian */ [['BIOE121', '0103'], ['MATH246H', '0201'], ['BIOE120', '0102'], ['BIOE241', '0102'], ['ENES100', '0402'], ['GEMS104', '0101'], ['GEMS102', '0101']],
-            /* Adib */ [['BIOE121', '0102'], ['MATH461', '0112'], ['PHYS161', '0303'], ['BIOE241', '0102'], ['ENES100', '0402'], ['BIOE120', '0102'], ['MUSC229U', '0101']],
-            /* Eitan */ [['HIST289A', '0103'], ['ENGL265', '0201'], ['COMM107', '6801'], ['JWST231', '0101'], ['JOUR284', '0101']],
-            /* Jack */ [['BMGT110S', '0101'], ['THET110', '0107'], ['CMSC132', '0205'], ['THET380', '5501'], ['ENGL101S', '1309']],
-            /* Jacob */ [['STAT100', '0131'], ['ENGL265', '0201'], ['ARTT110', '0401'], ['ENGL272', '0201'], ['BSCI103', '1109']],
-            /* Bryan */ [['CMSC132', '0201'], ['MATH241', '0312'], ['MATH240', '0123'], ['NFSC220', '0101'], ['MUSC229U', '0101']],
-            /* Louisa */ [['CMSC132', '0105'], ['COMM107', '6801'], ['MATH461', '0133'], ['PSYC100', '0503'], ['THET377', '5501']]);
+        courseLists.push([ /* Ryan */['ENGL101', '1002'], ['THET285', '0102'], ['ECON230', '0101'], ['ECON306', '0202'], ['PLCY213', '0201']],
+            /* Keys */[['CMSC132', '0202'], ['BSCI103', '1107'], ['MATH141', '0523'], ['COMM107', '9920']],
+            /* Willa */[['CMSC132', '0202'], ['ARHU275', '0101'], ['MATH240', '0122'], ['ENGL101', '1101'], ['JOUR284', '0101']],
+            /* Alphonse */[['CHEM237', '5355'], ['PHYS161', '0306'], ['BSCI223', '2401'], ['ENGL272', '0201'], ['BSCI223', '2401'], ['CHEM237', '5355'], ['MUSC229U', '0101']],
+            /* Kristin */[['PHYS265', '0101'], ['CHEM135', '3127'], ['ENCE100', '0101'], ['ENGL272', '0201'], ['GEMS104', '0111'], ['GEMS102', '0101']],
+            /* Ian */[['BIOE121', '0103'], ['MATH246H', '0201'], ['BIOE120', '0102'], ['BIOE241', '0102'], ['ENES100', '0402'], ['GEMS104', '0101'], ['GEMS102', '0101']],
+            /* Adib */[['BIOE121', '0102'], ['MATH461', '0112'], ['PHYS161', '0303'], ['BIOE241', '0102'], ['ENES100', '0402'], ['BIOE120', '0102'], ['MUSC229U', '0101']],
+            /* Eitan */[['HIST289A', '0103'], ['ENGL265', '0201'], ['COMM107', '6801'], ['JWST231', '0101'], ['JOUR284', '0101']],
+            /* Jack */[['BMGT110S', '0101'], ['THET110', '0107'], ['CMSC132', '0205'], ['THET380', '5501'], ['ENGL101S', '1309']],
+            /* Jacob */[['STAT100', '0131'], ['ENGL265', '0201'], ['ARTT110', '0401'], ['ENGL272', '0201'], ['BSCI103', '1109']],
+            /* Bryan */[['CMSC132', '0201'], ['MATH241', '0312'], ['MATH240', '0123'], ['NFSC220', '0101'], ['MUSC229U', '0101']],
+            /* Louisa */[['CMSC132', '0105'], ['COMM107', '6801'], ['MATH461', '0133'], ['PSYC100', '0503'], ['THET377', '5501']]);
 
-        // Loading in courseLists to people objects
+        // Loading in courseLists to allPeople objects
         loadAllCourseLists(courseLists).then(results => {
-            // Pushes courses onto people
+            // Pushes courses onto allPeople
             results.map((courseList, index) => {
                 courseList.map((courseObj) => {
-                    people[index].courses.push(courseObj);
+                    allPeople[index].courses.push(courseObj);
                 });
             });
-            // Sort people array by name
-            people.sort((a, b) => a.name.localeCompare(b.name));
-            // Add people to legend
-            drawLegend(people, AUTOCOLOR);
-            // Drawing courses when done
-            drawCourses(courses, people);
+            // Sort allPeople array by name
+            allPeople.sort((a, b) => a.name.localeCompare(b.name));
+
+            // Add allPeople to legend
+            drawLegend(allPeople, AUTOCOLOR);
+
+            // Drawing courses when done with all people selected by default
+            allPeople.map((p) => peopleToDraw.add(p.name));
+            drawCourses(courses, allPeople, peopleToDraw);
         });
 
         // Button event listeners
-        document.getElementById('previousDayButton').addEventListener("click", function () { previousDay(courses, people) });
-        document.getElementById('nextDayButton').addEventListener("click", function () { nextDay(courses, people) });
+        document.getElementById('previousDayButton').addEventListener("click", function () { previousDay(courses, allPeople, peopleToDraw) });
+        document.getElementById('nextDayButton').addEventListener("click", function () { nextDay(courses, allPeople, peopleToDraw) });
 
         // Courses event listener, prints course info to console
         courses.addEventListener("click", function (event) {
             let target = event.target;
             console.log(`${target.getAttribute('data-person')}: ${target.getAttribute('data-course')}`);
         });
-    }
 
+        // Legend event listener, adds/removes people from peopleToDraw set
+        legend.addEventListener("click", function (event) { legendClick(event.target, courses, allPeople, peopleToDraw) });
+
+    } // end if courses
+
+} // end if schedule
+
+function legendClick(target, courses, allPeople, peopleToDraw) {
+    let targetContainer = target.classList.contains("scheduleLegendRow") ? target : target.parentNode;
+    if (targetContainer.classList.contains("scheduleLegendRow")) {
+        let name = targetContainer.children[1];
+        if (name.innerText) { // checks if selected element has text
+            targetContainer.classList.toggle("grayout");
+            name = name.innerText;
+            if (peopleToDraw.has(name)) {
+                peopleToDraw.delete(name);
+            } else {
+                peopleToDraw.add(name);
+            }
+            drawCourses(courses, allPeople, peopleToDraw);
+        }
+    }
 }
 
 function loadAllCourseLists(courseListsArr) {
-    let peoplePromises = courseListsArr.map(courseList => loadCourseList(courseList));
-    let allPromises = Promise.all(peoplePromises);
+    let allPeoplePromises = courseListsArr.map(courseList => loadCourseList(courseList));
+    let allPromises = Promise.all(allPeoplePromises);
     return allPromises;
 }
 
@@ -178,10 +203,10 @@ function drawWeekdayLabel(label, weekday, size, color) {
     label.setAttribute('id', 'weekdayLabel');
 }
 
-function drawMeeting(rect, col, totalCols, person, meeting, courseName, autoColor) {
+function drawMeeting(rect, col, totalCols, person, meeting, courseName, autoColor, personIndex) {
     let start = meeting.start;
     let end = meeting.end;
-    let color = autoColor ? colorPalette[col % colorPalette.length] : person.color;
+    let color = autoColor ? colorPalette[personIndex % colorPalette.length] : person.color;
 
     rect.setAttribute('x', `${100 / totalCols * col}%`);
     rect.setAttribute('y', `${(100 / (numberOfHrs * 60)) * (start - 480)}%`);
@@ -194,35 +219,39 @@ function drawMeeting(rect, col, totalCols, person, meeting, courseName, autoColo
     rect.setAttribute('data-course', courseName);
 }
 
-function drawCourses(courses, people) {
-    let cols = people.length;
-    if (cols > 0) {
-        // If courses already exist, remove them
-        while (courses.firstChild) { courses.removeChild(courses.lastChild); }
+function drawCourses(courses, allPeople, peopleToDraw) {
+    let cols = peopleToDraw.size;
+    // If courses already exist, remove them
+    while (courses.firstChild) { courses.removeChild(courses.lastChild); }
 
-        // Draw courses
-        people.forEach((person, i) => {
-            person.courses.forEach((course) => {
-                drawOneCourse(courses, course, person, i, cols);
-            });
+    if (cols > 0) {
+        // Draw courses if person is in peopleToDraw set
+        let col = 0;
+        allPeople.forEach((person, index) => {
+            if (peopleToDraw.has(person.name)) {
+                person.courses.forEach((course) => {
+                    drawOneCourse(courses, course, person, col, cols, index);
+                });
+                col++;
+            }
         });
     }
 }
 
-function drawOneCourse(courses, course, person, col, totalCols) {
+function drawOneCourse(courses, course, person, col, totalCols, personIndex) {
     course.meetings.forEach((meeting) => {
         if (weekday == meeting.weekday) {
             let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            drawMeeting(rect, col, totalCols, person, meeting, course.name, AUTOCOLOR);
+            drawMeeting(rect, col, totalCols, person, meeting, course.name, AUTOCOLOR, personIndex);
             courses.appendChild(rect);
         }
     });
 }
 
-function previousDay(courses, people) {
+function previousDay(courses, allPeople, peopleToDraw) {
     if (weekday > 0) {
         weekday--;
-        drawCourses(courses, people);
+        drawCourses(courses, allPeople, peopleToDraw);
         document.getElementById('weekdayLabel').firstChild.nodeValue = daysOfWeek[weekday];
         updateCurrentTime();
 
@@ -237,10 +266,10 @@ function previousDay(courses, people) {
     }
 }
 
-function nextDay(courses, people) {
+function nextDay(courses, allPeople, peopleToDraw) {
     if (weekday < 4) {
         weekday++;
-        drawCourses(courses, people);
+        drawCourses(courses, allPeople, peopleToDraw);
         document.getElementById('weekdayLabel').firstChild.nodeValue = daysOfWeek[weekday];
         updateCurrentTime();
 
@@ -255,11 +284,11 @@ function nextDay(courses, people) {
     }
 }
 
-function drawLegend(people, autoColor){
-        // If legend entries already exist, remove them
-        while (legend.firstChild) { legend.removeChild(legend.lastChild); }
+function drawLegend(allPeople, autoColor) {
+    // If legend entries already exist, remove them
+    while (legend.firstChild) { legend.removeChild(legend.lastChild); }
 
-    people.forEach((person, index) => {
+    allPeople.forEach((person, index) => {
         let color = autoColor ? colorPalette[index % colorPalette.length] : person.color;
         // Create item
         let legendEntry = document.createElement('li');
