@@ -6,7 +6,8 @@ const AUTOCOLOR = true;
 let weekday = (new Date(Date.now())).getDay() - 1;
 weekday = weekday <= 4 && weekday >= 0 ? weekday : 0;
 let colorPalette = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#FAEC54','#b15928'];
-let numberOfHrs = 14; // starts at 8am, very few courses start before then
+let numberOfHrs = 14;
+let startHr = 8; // starts at 8am, few classes start before then
 
 if (header) {
     // Weekday label
@@ -49,7 +50,7 @@ if (schedule) {
     // Draw hour labels
     for (let i = 1; i <= numberOfHrs; i++) {
         let hourLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        drawHourLabel(hourLabel, i + 8, 3, 100 / numberOfHrs * i - 1, '#000');
+        drawHourLabel(hourLabel, (i-1) + startHr, 3, 100 / numberOfHrs * i - 4, '#000');
         schedule.appendChild(hourLabel);
     }
     let verticalLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
