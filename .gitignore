@@ -1,3 +1,4 @@
 prepros.config
 .htaccess
-.psd
+*.psd
+*.act
