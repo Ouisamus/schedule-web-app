@@ -212,6 +212,7 @@ function drawHourLabel(label, hour, size, y, color, isLeft) {
         textNode = document.createTextNode(`${hour - 12}:00`);
     }
     label.appendChild(textNode);
+    label.classList.add('hourLabel');
     label.setAttribute('font-size', size);
     label.setAttribute('font-family', 'helvetica');
     if (isLeft){
@@ -222,7 +223,6 @@ function drawHourLabel(label, hour, size, y, color, isLeft) {
         label.setAttribute('x', 200 - size * 3);
     }
     label.setAttribute('y', `${y}%`);
-    label.setAttribute('fill', color);
 }
 
 function drawWeekdayLabel(label, weekday, size, color) {
@@ -238,11 +238,12 @@ function drawWeekdayLabel(label, weekday, size, color) {
     label.setAttribute('id', 'weekdayLabel');
 }
 
-function drawMeeting(rect, col, totalCols, person, meeting, courseName, autoColor, personIndex) {
+function drawMeeting(rect, label, col, totalCols, person, meeting, courseName, autoColor, personIndex) {
     let start = meeting.start;
     let end = meeting.end;
     let color = autoColor ? colorPalette[personIndex % colorPalette.length] : person.color;
 
+    // Square
     rect.setAttribute('x', `${100 / totalCols * col}%`);
     rect.setAttribute('y', `${(100 / (numberOfHrs * 60)) * (start - 480)}%`);
     rect.setAttribute('width', `${100 / totalCols}%`);
@@ -252,6 +253,12 @@ function drawMeeting(rect, col, totalCols, person, meeting, courseName, autoColo
     rect.classList.add('meeting');
     rect.setAttribute('data-person', person.name);
     rect.setAttribute('data-course', courseName);
+
+    // Label
+    label.appendChild(document.createTextNode(courseName));
+    label.setAttribute('x', `${100 / totalCols * col + 0.25}%`);
+    label.setAttribute('y', `${(100 / (numberOfHrs * 60)) * (start - 480) + 2}%`);
+    label.classList.add('meetingLabel');
 }
 
 function drawCourses(courses, allPeople, peopleToDraw) {
@@ -277,8 +284,10 @@ function drawOneCourse(courses, course, person, col, totalCols, personIndex) {
     course.meetings.forEach((meeting) => {
         if (weekday == meeting.weekday) {
             let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            drawMeeting(rect, col, totalCols, person, meeting, course.name, AUTOCOLOR, personIndex);
+            let label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            drawMeeting(rect, label, col, totalCols, person, meeting, course.name, AUTOCOLOR, personIndex);
             courses.appendChild(rect);
+            courses.appendChild(label);
         }
     });
 }
