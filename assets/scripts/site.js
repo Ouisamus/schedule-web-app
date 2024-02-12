@@ -236,7 +236,7 @@ function drawWeekdayLabel(label, weekday, size, color) {
     label.setAttribute('id', 'weekdayLabel');
 }
 
-function drawMeeting(rect, label, col, totalCols, person, meeting, courseName, personIndex) {
+function drawMeeting(rect, label, col, totalCols, person, meeting, course, personIndex) {
     let start = meeting.start;
     let end = meeting.end;
 
@@ -249,13 +249,14 @@ function drawMeeting(rect, label, col, totalCols, person, meeting, courseName, p
     rect.setAttribute('rx', 2); // rounded corners
     rect.classList.add('meeting');
     rect.setAttribute('data-person', person.name);
-    rect.setAttribute('data-course', courseName);
+    rect.setAttribute('data-course', course.name);
+    rect.setAttribute('data-section', course.section);
 
-    // Label
-    label.appendChild(document.createTextNode(courseName));
-    label.setAttribute('x', `${100 / totalCols * col + 0.25}%`);
-    label.setAttribute('y', `${(100 / (numberOfHrs * 60)) * (start - 480) + 2}%`);
-    label.classList.add('meetingLabel');
+    // // Label
+    // label.appendChild(document.createTextNode(course.name + ' (' + course.section + ')'));
+    // label.setAttribute('x', `${100 / totalCols * col + 0.25}%`);
+    // label.setAttribute('y', `${(100 / (numberOfHrs * 60)) * (start - 480) + 2}%`);
+    // label.classList.add('meetingLabel');
 }
 
 function drawCourses(courses, allPeople, peopleToDraw) {
@@ -282,7 +283,7 @@ function drawOneCourse(courses, course, person, col, totalCols, personIndex) {
         if (weekday == meeting.weekday) {
             let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
             let label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            drawMeeting(rect, label, col, totalCols, person, meeting, course.name, personIndex);
+            drawMeeting(rect, label, col, totalCols, person, meeting, course, personIndex);
             courses.appendChild(rect);
             courses.appendChild(label);
         }

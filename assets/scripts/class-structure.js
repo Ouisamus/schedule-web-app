@@ -7,8 +7,9 @@ class Meeting {
 }
 
 class Course {
-    constructor(name) {
+    constructor(name, section) {
         this.name = name;
+        this.section = section;
         this.meetings = new Array();
     }
 }

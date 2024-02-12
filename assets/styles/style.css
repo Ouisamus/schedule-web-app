@@ -95,6 +95,7 @@ p, button, .hourLabel, .meetingLabel{
 .meetingLabel{
     fill: black;
     font-size: 2px;
+    text-align: center;
 }
 
 .hourLabel{

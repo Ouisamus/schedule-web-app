@@ -12,7 +12,7 @@ function getCourseObj(course, section, semester) { // return type Course object 
                 const latestSnapshotURL = response.data.snapshots[response.data.snapshots.length-1].url;
                 axios.get(latestSnapshotURL)
                 .then((response) => {
-                    let courseObj = new Course(`${course}-${section}`); // Creates course object
+                    let courseObj = new Course(course, section); // Creates course object
                     const sectionTimes = response.data[course].sections[section].meetings;
                     sectionTimes.forEach((row) => {
                         if (row.days && row.start && row.end){
