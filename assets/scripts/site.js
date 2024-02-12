@@ -2,7 +2,6 @@
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const header = document.getElementById('header');
 const SEMESTER = '202401';
-const AUTOCOLOR = true;
 let weekday = (new Date(Date.now())).getDay() - 1;
 weekday = weekday <= 4 && weekday >= 0 ? weekday : 0;
 let colorPalette = ['#efe645', '#e48b00', '#b80058', '#008cf9', '#026502', '#29d3c6', '#c456d9', '#b43503', '#ff9287', '#9032e3', '#00c6f8', '#4ab03f', '#807b25', '#633600', '#999999'];
@@ -70,11 +69,11 @@ if (schedule) {
         let allPeople = new Array();
         let peopleToDraw = new Set();
         let courseLists = new Array();
-        allPeople.push(new Person('Ryan', '#9b59b6'), new Person('Keys', '#388fc7'), new Person('Willa', '#8FAE53'),
-            new Person('Alphonse', '#2ECC71'), new Person('Kristin', '#BA88F8'), new Person('Ian', '#37DFBE'),
-            new Person('Adib', '#BE2F96'), new Person('Eitan', '#5384EC'), new Person('Jack', '#8721B2'),
-            new Person('Jacob', '#DB7093'), new Person('Bryan', '#1F8B4C'), new Person('Louisa', '#F1C40F'),
-            new Person('Zach', '#71368A'));
+        allPeople.push(new Person('Ryan'), new Person('Keys'), new Person('Willa'),
+            new Person('Alphonse'), new Person('Kristin'), new Person('Ian'),
+            new Person('Adib'), new Person('Eitan'), new Person('Jack'),
+            new Person('Jacob'), new Person('Bryan'), new Person('Louisa'),
+            new Person('Zach'));
         courseLists.push([ /* Ryan */['ENGL101', '1002'], ['THET285', '0102'], ['ECON230', '0101'], ['ECON306', '0202'], ['PLCY213', '0201']],
             /* Keys */[['CMSC132', '0202'], ['BSCI103', '1107'], ['MATH141', '0523'], ['COMM107', '9920']],
             /* Willa */[['CMSC132', '0202'], ['ARHU275', '0101'], ['MATH240', '0122'], ['ENGL101', '1101'], ['JOUR284', '0101']],
@@ -101,7 +100,7 @@ if (schedule) {
             allPeople.sort((a, b) => a.name.localeCompare(b.name));
 
             // Add allPeople to legend
-            drawLegend(allPeople, AUTOCOLOR);
+            drawLegend(allPeople);
 
             // Drawing courses when done with all people selected by default
             allPeople.map((p) => peopleToDraw.add(p.name));
@@ -237,17 +236,16 @@ function drawWeekdayLabel(label, weekday, size, color) {
     label.setAttribute('id', 'weekdayLabel');
 }
 
-function drawMeeting(rect, label, col, totalCols, person, meeting, courseName, autoColor, personIndex) {
+function drawMeeting(rect, label, col, totalCols, person, meeting, courseName, personIndex) {
     let start = meeting.start;
     let end = meeting.end;
-    let color = autoColor ? colorPalette[personIndex % colorPalette.length] : person.color;
 
     // Square
     rect.setAttribute('x', `${100 / totalCols * col}%`);
     rect.setAttribute('y', `${(100 / (numberOfHrs * 60)) * (start - 480)}%`);
     rect.setAttribute('width', `${100 / totalCols}%`);
     rect.setAttribute('height', `${(100 / (numberOfHrs * 60)) * (end - start)}%`);
-    rect.setAttribute('fill', color);
+    rect.setAttribute('fill', colorPalette[personIndex % colorPalette.length]);
     rect.setAttribute('rx', 2); // rounded corners
     rect.classList.add('meeting');
     rect.setAttribute('data-person', person.name);
@@ -284,7 +282,7 @@ function drawOneCourse(courses, course, person, col, totalCols, personIndex) {
         if (weekday == meeting.weekday) {
             let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
             let label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            drawMeeting(rect, label, col, totalCols, person, meeting, course.name, AUTOCOLOR, personIndex);
+            drawMeeting(rect, label, col, totalCols, person, meeting, course.name, personIndex);
             courses.appendChild(rect);
             courses.appendChild(label);
         }
@@ -327,12 +325,12 @@ function nextDay(courses, allPeople, peopleToDraw) {
     }
 }
 
-function drawLegend(allPeople, autoColor) {
+function drawLegend(allPeople) {
     // If legend entries already exist, remove them
     while (legend.firstChild) { legend.removeChild(legend.lastChild); }
 
     allPeople.forEach((person, index) => {
-        let color = autoColor ? colorPalette[index % colorPalette.length] : person.color;
+        let color = colorPalette[index % colorPalette.length];
         // Create item
         let legendEntry = document.createElement('li');
         legendEntry.classList.add('scheduleLegendRow');

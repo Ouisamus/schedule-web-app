@@ -14,9 +14,8 @@ class Course {
 }
 
 class Person {
-    constructor(name, color) {
+    constructor(name) {
         this.name = name;
-        this.color = color;
         this.courses = new Array();
     }
 }
