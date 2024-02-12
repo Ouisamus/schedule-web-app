@@ -5,7 +5,8 @@ const SEMESTER = '202401';
 const AUTOCOLOR = true;
 let weekday = (new Date(Date.now())).getDay() - 1;
 weekday = weekday <= 4 && weekday >= 0 ? weekday : 0;
-let colorPalette = ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a', '#FAEC54', '#b15928'];
+// let colorPalette = ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a', '#FAEC54', '#b15928'];
+let colorPalette = ['#ebac23', '#b80058', '#008cf9', '#006e00', '#00bbad', '#d163e6', '#b24502', '#ff9287', '#5954d6' ,'#00c6f8', '#878500', '#00a76c', '#999999', '#efe645']
 let numberOfHrs = 14;
 let startHr = 8; // starts at 8am, few classes start before then
 
@@ -49,13 +50,19 @@ if (schedule) {
 
     // Draw hour labels
     for (let i = 1; i <= numberOfHrs; i++) {
-        let hourLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        drawHourLabel(hourLabel, (i - 1) + startHr, 3, 100 / numberOfHrs * i - 4, '#000');
-        schedule.appendChild(hourLabel);
+        let hourLabelL = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        drawHourLabel(hourLabelL, (i - 1) + startHr, 3, 100 / numberOfHrs * i - 4, '#000', true);
+        schedule.appendChild(hourLabelL);
+        let hourLabelR = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        drawHourLabel(hourLabelR, (i - 1) + startHr, 3, 100 / numberOfHrs * i - 4, '#000', false);
+        schedule.appendChild(hourLabelR);
     }
     let verticalLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     drawVertLine(verticalLine, 10, '#bbb', '0.5');
     schedule.prepend(verticalLine);
+    let verticalLine2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    drawVertLine(verticalLine2, 190, '#bbb', '0.5');
+    schedule.prepend(verticalLine2);
 
     // Establish allPeople & draw courses
     const courses = document.querySelector("#courses");
@@ -67,7 +74,8 @@ if (schedule) {
         allPeople.push(new Person('Ryan', '#9b59b6'), new Person('Keys', '#388fc7'), new Person('Willa', '#8FAE53'),
             new Person('Alphonse', '#2ECC71'), new Person('Kristin', '#BA88F8'), new Person('Ian', '#37DFBE'),
             new Person('Adib', '#BE2F96'), new Person('Eitan', '#5384EC'), new Person('Jack', '#8721B2'),
-            new Person('Jacob', '#DB7093'), new Person('Bryan', '#1F8B4C'), new Person('Louisa', '#F1C40F'));
+            new Person('Jacob', '#DB7093'), new Person('Bryan', '#1F8B4C'), new Person('Louisa', '#F1C40F'),
+            new Person('Zach', '#71368A'));
         courseLists.push([ /* Ryan */['ENGL101', '1002'], ['THET285', '0102'], ['ECON230', '0101'], ['ECON306', '0202'], ['PLCY213', '0201']],
             /* Keys */[['CMSC132', '0202'], ['BSCI103', '1107'], ['MATH141', '0523'], ['COMM107', '9920']],
             /* Willa */[['CMSC132', '0202'], ['ARHU275', '0101'], ['MATH240', '0122'], ['ENGL101', '1101'], ['JOUR284', '0101']],
@@ -79,7 +87,8 @@ if (schedule) {
             /* Jack */[['BMGT110S', '0101'], ['THET110', '0107'], ['CMSC132', '0205'], ['THET380', '5501'], ['ENGL101S', '1309']],
             /* Jacob */[['STAT100', '0131'], ['ENGL265', '0201'], ['ARTT110', '0401'], ['ENGL272', '0201'], ['BSCI103', '1109']],
             /* Bryan */[['CMSC132', '0201'], ['MATH241', '0312'], ['MATH240', '0123'], ['NFSC220', '0101'], ['MUSC229U', '0101']],
-            /* Louisa */[['CMSC132', '0105'], ['COMM107', '6801'], ['MATH461', '0133'], ['PSYC100', '0503'], ['THET377', '5501']]);
+            /* Louisa */[['CMSC132', '0105'], ['COMM107', '6801'], ['MATH461', '0133'], ['PSYC100', '0503'], ['THET377', '5501']],
+            /* Zach */ [['MATH141', '0222'], ['ENGL101', '0503'], ['PHYS161', '0308'], ['FIRE198', '0116'], ['ENME272', '0501']]);
 
         // Loading in courseLists to allPeople objects
         loadAllCourseLists(courseLists).then(results => {
@@ -196,7 +205,7 @@ function drawVertLine(line, x, color, size) {
     line.setAttribute('stroke-width', size);
 }
 
-function drawHourLabel(label, hour, size, y, color) {
+function drawHourLabel(label, hour, size, y, color, isLeft) {
     if (hour <= 12) { // converts 24hr clock -> 12hr clock
         textNode = document.createTextNode(`${hour}:00`);
     } else {
@@ -205,8 +214,13 @@ function drawHourLabel(label, hour, size, y, color) {
     label.appendChild(textNode);
     label.setAttribute('font-size', size);
     label.setAttribute('font-family', 'helvetica');
-    label.setAttribute('text-anchor', 'end');
-    label.setAttribute('x', size * 3);
+    if (isLeft){
+        label.setAttribute('text-anchor', 'end');
+        label.setAttribute('x', size * 3);
+    } else {   
+        label.setAttribute('text-anchor', 'start');
+        label.setAttribute('x', 200 - size * 3);
+    }
     label.setAttribute('y', `${y}%`);
     label.setAttribute('fill', color);
 }
