@@ -4,7 +4,7 @@ const header = document.getElementById('header');
 const SEMESTER = '202401';
 let weekday = (new Date(Date.now())).getDay() - 1;
 weekday = weekday <= 4 && weekday >= 0 ? weekday : 0;
-let colorPalette = ['#efe645', '#e48b00', '#b80058', '#008cf9', '#026502', '#29d3c6', '#c456d9', '#b43503', '#ff9287', '#9032e3', '#00c6f8', '#4ab03f', '#807b25', '#633600', '#999999'];
+let colorPalette = ['#efe645', '#e48b00', '#b80058', '#008cf9', '#026502', '#29d3c6', '#c456d9', '#b43503', '#ff9287', '#00c6f8', '#4ab03f', '#807b25', '#633600', '#999999'];
 let numberOfHrs = 14;
 let startHr = 8; // starts at 8am, few classes start before then
 
