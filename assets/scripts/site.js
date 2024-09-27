@@ -140,18 +140,6 @@ function legendSetItem(targetContainer, peopleToDraw, setItemOnOff) {
     }
 }
 
-function loadAllCourseLists(courseListsArr) {
-    let allPeoplePromises = courseListsArr.map(courseList => loadCourseList(courseList));
-    let allPromises = Promise.all(allPeoplePromises);
-    return allPromises;
-}
-
-function loadCourseList(courseList) {
-    let courseObjPromises = courseList.map(course => getCourseObj(course[0], course[1], '202401'));
-    let allPromises = Promise.all(courseObjPromises);
-    return allPromises;
-}
-
 function updateCurrentTime() {
     const line = document.getElementById('nowLine')
     let currentTime = new Date(Date.now());
