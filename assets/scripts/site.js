@@ -65,84 +65,62 @@ if (schedule) {
     // Establish allPeople & draw courses
     const courses = document.querySelector("#courses");
     if (courses) {
-        // Establishing allPeople & courseLists
-        let allPeople = new Array();
-        let peopleToDraw = new Set();
-        let courseLists = new Array();
-        allPeople.push(new Person('Ryan'), new Person('Keys'), new Person('Willa'),
-            new Person('Alphonse'), new Person('Kristin'), new Person('Ian'),
-            new Person('Adib'), new Person('Eitan'), new Person('Jack'),
-            new Person('Jacob'), new Person('Bryan'), new Person('Louisa'),
-            new Person('Zach'));
-        courseLists.push([ /* Ryan */['ENGL101', '1002'], ['THET285', '0102'], ['ECON230', '0101'], ['ECON306', '0202'], ['PLCY213', '0201']],
-            /* Keys */[['CMSC132', '0202'], ['BSCI103', '1107'], ['MATH141', '0523'], ['COMM107', '9920']],
-            /* Willa */[['CMSC132', '0202'], ['ARHU275', '0101'], ['MATH240', '0122'], ['ENGL101', '1101'], ['JOUR284', '0101']],
-            /* Alphonse */[['CHEM237', '5355'], ['PHYS161', '0306'], ['BSCI223', '2401'], ['ENGL272', '0201'], ['BSCI223', '2401'], ['CHEM237', '5355'], ['MUSC229U', '0101']],
-            /* Kristin */[['PHYS265', '0101'], ['CHEM135', '3127'], ['ENCE100', '0101'], ['ENGL272', '0201'], ['GEMS104', '0111'], ['GEMS102', '0101']],
-            /* Ian */[['BIOE121', '0103'], ['MATH246H', '0201'], ['BIOE120', '0102'], ['BIOE241', '0102'], ['ENES100', '0402'], ['GEMS104', '0101'], ['GEMS102', '0101']],
-            /* Adib */[['BIOE121', '0102'], ['MATH461', '0112'], ['PHYS161', '0303'], ['BIOE241', '0102'], ['ENES100', '0402'], ['BIOE120', '0102'], ['MUSC229U', '0101']],
-            /* Eitan */[['HIST289A', '0103'], ['ENGL265', '0201'], ['COMM107', '6801'], ['JWST231', '0101'], ['JOUR284', '0101']],
-            /* Jack */[['BMGT110S', '0101'], ['THET110', '0107'], ['CMSC132', '0205'], ['THET380', '5501'], ['ENGL101S', '1309']],
-            /* Jacob */[['STAT100', '0131'], ['ENGL265', '0201'], ['ARTT110', '0401'], ['ENGL272', '0201'], ['BSCI103', '1109']],
-            /* Bryan */[['CMSC132', '0201'], ['MATH241', '0312'], ['MATH240', '0123'], ['NFSC220', '0101'], ['MUSC229U', '0101']],
-            /* Louisa */[['CMSC132', '0105'], ['COMM107', '6801'], ['MATH461', '0133'], ['PSYC100', '0503'], ['THET377', '5501']],
-            /* Zach */ [['MATH141', '0222'], ['ENGL101', '0503'], ['PHYS161', '0308'], ['FIRE198', '0116'], ['ENME272', '0501']]);
 
-        // Loading in courseLists to allPeople objects
-        loadAllCourseLists(courseLists).then(results => {
-            // Pushes courses onto allPeople
-            results.map((courseList, index) => {
-                courseList.map((courseObj) => {
-                    allPeople[index].courses.push(courseObj);
-                });
-            });
-            // Sort allPeople array by name
-            allPeople.sort((a, b) => a.name.localeCompare(b.name));
+        // Load allPeople from server file
+        fetch("http://louisameyerson.com/assets/scripts/data.json")
+            .then(res => res.json())
+            .then(function (res) {
+                console.log("Success!");
 
-            // Add allPeople to legend
-            drawLegend(allPeople);
-
-            // Drawing courses when done with all people selected by default
-            allPeople.map((p) => peopleToDraw.add(p.name));
-            drawCourses(courses, allPeople, peopleToDraw);
-        });
-
-        // Button event listeners
-        document.getElementById('previousDayButton').addEventListener("click", function () { previousDay(courses, allPeople, peopleToDraw) });
-        document.getElementById('nextDayButton').addEventListener("click", function () { nextDay(courses, allPeople, peopleToDraw) });
-
-        // Courses event listener, prints course info to console
-        courses.addEventListener("click", function (event) {
-            let target = event.target;
-            console.log(`${target.getAttribute('data-person')}: ${target.getAttribute('data-course')}`);
-        });
-
-        // Legend event listener, adds/removes people from peopleToDraw set
-        legend.addEventListener("click", function (event) {
-            let target = event.target;
-            let targetContainer = target.classList.contains("scheduleLegendRow") ? target : target.parentNode;
-            if (targetContainer.classList.contains("scheduleLegendRow")) {
-                let setItemState = targetContainer.classList.contains("grayout");
-                legendSetItem(targetContainer, peopleToDraw, setItemState);
+                // Parse data & sort allPeople array by name
+                let allPeople = res;
+                allPeople.sort((a, b) => a.name.localeCompare(b.name));
+        
+                // Add allPeople to legend
+                drawLegend(allPeople);
+        
+                // Drawing courses when done with all people selected by default
+                let peopleToDraw = new Set();
+                allPeople.map((p) => peopleToDraw.add(p.name));
                 drawCourses(courses, allPeople, peopleToDraw);
-            }
-         });
-
-        // Legend selector event listeners
-        // Select all people
-        document.getElementById('selectAllButton').addEventListener("click", function () {
-            for (legendItem of legend.children) {
-                legendSetItem(legendItem, peopleToDraw, true);
-            }
-            drawCourses(courses, allPeople, peopleToDraw);
-        });
-        // Deselect all people
-        document.getElementById('deselectAllButton').addEventListener("click", function () {
-            for (legendItem of legend.children) {
-                legendSetItem(legendItem, peopleToDraw, false);
-            }
-            drawCourses(courses, allPeople, peopleToDraw);
-        });
+        
+                // Button event listeners
+                document.getElementById('previousDayButton').addEventListener("click", function () { previousDay(courses, allPeople, peopleToDraw) });
+                document.getElementById('nextDayButton').addEventListener("click", function () { nextDay(courses, allPeople, peopleToDraw) });
+        
+                // Courses event listener, prints course info to console
+                courses.addEventListener("click", function (event) {
+                    let target = event.target;
+                    console.log(`${target.getAttribute('data-person')}: ${target.getAttribute('data-course')}`);
+                });
+        
+                // Legend event listener, adds/removes people from peopleToDraw set
+                legend.addEventListener("click", function (event) {
+                    let target = event.target;
+                    let targetContainer = target.classList.contains("scheduleLegendRow") ? target : target.parentNode;
+                    if (targetContainer.classList.contains("scheduleLegendRow")) {
+                        let setItemState = targetContainer.classList.contains("grayout");
+                        legendSetItem(targetContainer, peopleToDraw, setItemState);
+                        drawCourses(courses, allPeople, peopleToDraw);
+                    }
+                });
+        
+                // Legend selector event listeners
+                // Select all people
+                document.getElementById('selectAllButton').addEventListener("click", function () {
+                    for (legendItem of legend.children) {
+                        legendSetItem(legendItem, peopleToDraw, true);
+                    }
+                    drawCourses(courses, allPeople, peopleToDraw);
+                });
+                // Deselect all people
+                document.getElementById('deselectAllButton').addEventListener("click", function () {
+                    for (legendItem of legend.children) {
+                        legendSetItem(legendItem, peopleToDraw, false);
+                    }
+                    drawCourses(courses, allPeople, peopleToDraw);
+                });
+            })
 
     } // end if courses
 
