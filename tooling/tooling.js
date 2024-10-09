@@ -1,4 +1,4 @@
-const functionList = ["list_funcs()", "list_people()", "person(name - optional)", "add(course, section)", "load()", "exp()"];
+const functionList = ["list_funcs()", "list_people()", "person(name - optional)", "add(course, section)", "remove(course)", "load()", "exp(filename - optional)"];
 const SEM_ID = prompt("Input semester ID for session");
 let selectedPerson;
 let people = new Map(); // maps names to Person objects
@@ -40,7 +40,36 @@ function add(course, section){
     });
 }
 
+function remove(course){
+    // Formats input
+    course = course.toUpperCase()
+    
+    for (let i = 0; i < people.get(selectedPerson).courses.length; i++){
+        if (people.get(selectedPerson).courses[i].name == course){
+            people.get(selectedPerson).courses.splice(i, 1);
+            console.log(`Removed ${course}`);
+            break;
+        }
+    }
+}
+
 function exp(){
     console.log(Array.from(people.values()));
     console.log(JSON.stringify(Array.from(people.values())));
+}
+
+function load(filename){
+    if (!filename){
+        filename = "data.json"
+    }
+    fetch(`http://louisameyerson.com/assets/scripts/${filename}`)
+            .then(res => res.json())
+            .then(function (res) {
+                people = new Map();
+                for (personObj of res){
+                    people.set(personObj.name, personObj);
+                }
+                console.log("Load complete");
+                list_people();
+            });
 }
