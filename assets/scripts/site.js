@@ -99,8 +99,20 @@ if (schedule) {
                     let target = event.target;
                     let targetContainer = target.classList.contains("scheduleLegendRow") ? target : target.parentNode;
                     if (targetContainer.classList.contains("scheduleLegendRow")) {
-                        let setItemState = targetContainer.classList.contains("grayout");
-                        legendSetItem(targetContainer, peopleToDraw, setItemState);
+                        // If everyone is selected, isolate to only target
+                        let allSelected = true;
+                        for (legendItem of legend.children){
+                            allSelected = !(legendItem.classList.contains("grayout")) && allSelected;
+                        }
+                        if (allSelected){
+                            // deselect all, then select target
+                            legendSetAll(peopleToDraw, false);
+                            legendSetItem(targetContainer, peopleToDraw, true);
+                        } else {
+                            // select/deselect target as usual
+                            let setItemState = targetContainer.classList.contains("grayout");
+                            legendSetItem(targetContainer, peopleToDraw, setItemState);
+                        }
                         drawCourses(courses, allPeople, peopleToDraw);
                     }
                 });
@@ -108,16 +120,12 @@ if (schedule) {
                 // Legend selector event listeners
                 // Select all people
                 document.getElementById('selectAllButton').addEventListener("click", function () {
-                    for (legendItem of legend.children) {
-                        legendSetItem(legendItem, peopleToDraw, true);
-                    }
+                    legendSetAll(peopleToDraw, true);
                     drawCourses(courses, allPeople, peopleToDraw);
                 });
                 // Deselect all people
                 document.getElementById('deselectAllButton').addEventListener("click", function () {
-                    for (legendItem of legend.children) {
-                        legendSetItem(legendItem, peopleToDraw, false);
-                    }
+                    legendSetAll(peopleToDraw, false);
                     drawCourses(courses, allPeople, peopleToDraw);
                 });
             })
@@ -125,6 +133,12 @@ if (schedule) {
     } // end if courses
 
 } // end if schedule
+
+function legendSetAll(peopleToDraw, setItemsOnOff){
+    for (legendItem of legend.children){
+        legendSetItem(legendItem, peopleToDraw, setItemsOnOff);
+    }
+}
 
 function legendSetItem(targetContainer, peopleToDraw, setItemOnOff) {
     let name = targetContainer.children[1];
