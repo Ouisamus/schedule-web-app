@@ -5,6 +5,7 @@ const SEMESTER = '202401';
 let weekday = (new Date(Date.now())).getDay() - 1;
 weekday = weekday <= 4 && weekday >= 0 ? weekday : 0;
 let colorPalette = ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a', '#FAEC54', '#b15928', '#999999'];
+let contrastColorPalette = ['black', 'white', 'black', 'black', 'black', 'white', 'black', 'black', 'black', 'white', 'black', 'white', 'black', 'black', 'black'];
 let numberOfHrs = 14;
 let startHr = 8; // starts at 8am, few classes start before then
 
@@ -233,10 +234,22 @@ function drawMeeting(rect, label, col, totalCols, person, meeting, course, perso
     rect.setAttribute('data-section', course.section);
 
     // // Label
-    // label.appendChild(document.createTextNode(course.name + ' (' + course.section + ')'));
-    // label.setAttribute('x', `${100 / totalCols * col + 0.25}%`);
-    // label.setAttribute('y', `${(100 / (numberOfHrs * 60)) * (start - 480) + 2}%`);
-    // label.classList.add('meetingLabel');
+    // code for 2 lines:
+    // line1 = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+    // line2 = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+    // line1.textContent = course.name;
+    // line2.textContent = '(' + course.section + ')';
+    // // line1.setAttribute('x',`${100 / totalCols * col + 0.3}%`); // line1 x is already correct
+    // line2.setAttribute('x',`${100 / totalCols * col + 0.3}%`);
+    // line1.setAttribute('dy','0');
+    // line2.setAttribute('dy','3');
+    // label.appendChild(line1);
+    // label.appendChild(line2);
+    label.appendChild(document.createTextNode(course.name));
+    label.setAttribute('x', `${100 / totalCols * col + 0.4}%`);
+    label.setAttribute('y', `${(100 / (numberOfHrs * 60)) * (start - 480) + 2.5}%`);
+    label.setAttribute('fill', contrastColorPalette[personIndex % colorPalette.length]);
+    label.classList.add('meetingLabel');
 }
 
 function drawCourses(courses, allPeople, peopleToDraw) {
