@@ -1,4 +1,5 @@
 // Draw header
+const MOBILE = navigator.userAgent.indexOf("Mobi") > -1;
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const header = document.getElementById('header');
 const SEMESTER = '202401';
@@ -338,5 +339,14 @@ function drawLegend(allPeople) {
         legendEntryText.innerText = person.name;
         legendEntry.append(legendEntryText);
         legend.append(legendEntry);
+
+        if (MOBILE){ // bigger icons on mobile
+            legendEntry.classList.add('mobile');
+            colorSquare.classList.add('mobile');
+            legend.classList.add('mobile');
+            for (x of document.getElementsByClassName('legendButton')){
+                x.classList.add('mobile');
+            }
+        }
     });
 }
