@@ -124,6 +124,5 @@ p, button, .hourLabel, .meetingLabel{
 
 .mobile.meetingLabel{
     font-size: 3px; /* original: 2.2 */
-    color: red;
 }
 
