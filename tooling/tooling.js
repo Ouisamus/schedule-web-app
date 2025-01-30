@@ -1,4 +1,4 @@
-const functionList = ["list_funcs()", "list_people()", "person(name - optional)", "add(course, section)", "remove(course)", "load()", "exp(filename - optional)"];
+const functionList = ["list_funcs()", "list_people()", "person(name - optional)", "add(course, section)", "remove(course)", "load(filename - optional)", "exp()"];
 const SEM_ID = prompt("Input semester ID for session");
 let selectedPerson;
 let people = new Map(); // maps names to Person objects
@@ -62,7 +62,7 @@ function load(filename){
     if (!filename){
         filename = "data.json"
     }
-    fetch(`http://louisameyerson.com/assets/scripts/${filename}`)
+    fetch(`https://louisameyerson.com/assets/scripts/${filename}`)
             .then(res => res.json())
             .then(function (res) {
                 people = new Map();

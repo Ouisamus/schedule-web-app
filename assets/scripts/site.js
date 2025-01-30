@@ -69,7 +69,7 @@ if (schedule) {
     if (courses) {
 
         // Load allPeople from server file
-        fetch("http://louisameyerson.com/assets/scripts/data.json")
+        fetch("https://louisameyerson.com/assets/scripts/data.json?v2")
             .then(res => res.json())
             .then(function (res) {
                 console.log("Success!");

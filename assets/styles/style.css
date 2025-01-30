@@ -122,7 +122,7 @@ p, button, .hourLabel, .meetingLabel{
     margin: 20px 0; /* original: 7 */
 }
 
-.meetingLabel.mobile{
-    font-size: 2.6px; /* original: 2.2 */
+.mobile.meetingLabel{
+    font-size: 30px; /* original: 2.2 */
 }
 
