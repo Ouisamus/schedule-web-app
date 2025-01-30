@@ -251,6 +251,9 @@ function drawMeeting(rect, label, col, totalCols, person, meeting, course, perso
     label.setAttribute('y', `${(100 / (numberOfHrs * 60)) * (start - 480) + 2.5}%`);
     label.setAttribute('fill', contrastColorPalette[personIndex % colorPalette.length]);
     label.classList.add('meetingLabel');
+    if (MOBILE){ // bigger text on mobile
+        label.classList.add('mobile');
+    }
 }
 
 function drawCourses(courses, allPeople, peopleToDraw) {
